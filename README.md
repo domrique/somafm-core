@@ -7,6 +7,8 @@
 ### 🔴 [Launch Player (Live Demo)](https://domrique.github.io/somafm-core/)
 
 <img width="801" height="723" alt="image" src="https://github.com/user-attachments/assets/095575df-2a13-4f48-960d-30e9a357d79b" />
+<img width="591" height="1237" alt="image" src="https://github.com/user-attachments/assets/8cfeab4d-7f9b-413d-94f8-6135f150a6d9" />
+
 
 
 ## 🇷🇺 [Русская версия](README.ru.md)
