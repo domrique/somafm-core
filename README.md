@@ -4,6 +4,7 @@
 > A minimalist, terminal-style web player for SomaFM radio stations.
 
 **SomaFM Core** is a lightweight, single-file HTML player that turns your browser into a "hacker-style" radio station. No servers, no databases, no installation required. Just open the file and listen.
+### 🔴 [Launch Player (Live Demo)](https://domrique.github.io/somafm-core/)
 
 ![Screenshot](image.jpg)
 
