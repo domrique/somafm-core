@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>SomaFMcore: System Ready. Music On.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js"></script>
+
+  <style>
+    :root{
+      --bg-color: #121212;
+      --fg-color: #cccccc;
+      --prompt-user: #87d75f;
+      --prompt-path: #5f87d7;
+      --cmd-color: #fce94f;
+      --cursor: #cccccc;
+      --status-bg: #007acc;
+      --status-fg: #ffffff;
+      --vis-color: #4ec9b0;
+      --track-bg: #d7005f;
+      --track-fg: #ffffff;
+      --status-h: 90px;
+      --term-max-width: 800px;
+    }
+    
+    *{ box-sizing:border-box; }
+    
+    html {
+      background-color: #050505; 
+    }
+    
+    body{
+      background-color:var(--bg-color);
+      color:var(--fg-color);
+      font-family:"Ubuntu Mono", Consolas, monospace;
+      font-size:16px;
+      margin:0; padding:0;
+      height:100vh; height:100dvh;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    @media (min-width: 801px) {
+      body {
+        max-width: var(--term-max-width);
+        margin: 0;
+        border-right: 1px solid #333;
+        box-shadow: 10px 0 40px rgba(0,0,0,0.5);
+        position: relative;
+      }
+      #status-bar, #input-line {
+        max-width: var(--term-max-width);
+        left: 0;
+        width: 100%;
+      }
+    }
+
+    #terminal{
+      flex:1;
+      padding:10px 12px;
+      padding-top:max(15px, env(safe-area-inset-top));
+      padding-bottom:calc(var(--status-h) + 45px); 
+      overflow-y:auto;
+      overflow-x:hidden;
+      word-wrap:break-word;
+      display:flex;
+      flex-direction:column;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    #terminal::-webkit-scrollbar{ width:6px; }
+    #terminal::-webkit-scrollbar-track{ background:var(--bg-color); }
+    #terminal::-webkit-scrollbar-thumb{ background:#333; }
+
+    .line{ 
+      line-height:1.3; 
+      min-height:18px; 
+      margin-bottom: 2px;
+      display: block;
+    }
+    
+    .c-user { color: var(--prompt-user); font-weight:bold; }
+    .c-path { color: var(--prompt-path); font-weight:bold; }
+    .c-cmd  { color: var(--cmd-color); }
+    .c-dim  { color: #666; }
+    .c-err  { color: #f44747; }
+    .c-vis  { color: var(--vis-color); font-weight:bold; }
+
+    .stations-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 10px;
+    }
+    .station-item {
+        white-space: nowrap;
+    }
+
+    .track-highlight {
+      background-color: var(--track-bg);
+      color: var(--track-fg);
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 2px;
+      display: inline-block;
+      margin: 4px 0;
+      box-shadow: 0 0 5px rgba(215, 0, 95, 0.4);
+    }
+
+    .clickable{ cursor:pointer; }
+    .clickable:hover{ background-color:#333; color:#fff; text-decoration:underline; }
+
+    #input-line{
+      position: fixed;
+      bottom: calc(var(--status-h) + env(safe-area-inset-bottom));
+      left: 0;
+      width: 100%;
+      background-color: var(--bg-color);
+      padding: 6px 12px 8px 12px;
+      display:flex;
+      align-items:center;
+      z-index: 10;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    #prompt-span{ margin-right:8px; white-space:nowrap; flex-shrink:0; }
+    #input-wrapper{ position:relative; flex:1; display:flex; align-items:center; overflow:hidden; }
+    #cmd-input{
+      position:absolute; top:0; left:0; width:100%; height:100%;
+      opacity:0; border:none; padding:0; margin:0; cursor:default;
+    }
+    #cursor{
+      display:inline-block; width:9px; height:1.1em;
+      background-color:var(--cursor);
+      animation:blink 1s step-end infinite;
+      vertical-align:text-bottom; margin-left: 1px;
+    }
+    @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+    #status-bar{
+      position:fixed; bottom:0; left:0; width:100%;
+      background-color:var(--status-bg);
+      color:var(--status-fg);
+      display:flex; flex-direction:column;
+      height:calc(var(--status-h) + env(safe-area-inset-bottom));
+      padding-bottom:env(safe-area-inset-bottom);
+      font-size:13px; z-index:9999;
+      box-shadow:0 -4px 20px rgba(0,0,0,0.6);
+      user-select:none; -webkit-user-select:none;
+    }
+
+    #status-info-row {
+      flex:1; display:flex; align-items:center; justify-content:space-between;
+      padding:0 12px; background: rgba(0,0,0,0.15);
+      border-bottom:1px solid rgba(255,255,255,0.1);
+    }
+    #info-track-container { flex:1; overflow:hidden; margin-right:10px; display:flex; flex-direction:column; justify-content:center; }
+    #info-label { font-size:10px; opacity:0.7; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px; }
+    #info-track { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:bold; font-size:14px; }
+    #info-meta { text-align:right; font-size:12px; min-width:64px; display:flex; align-items:center; justify-content:flex-end; }
+
+    /* --- NEW PIXEL VISUALIZER STYLE --- */
+    #vis-canvas {
+      width: 64px;
+      height: 24px;
+      image-rendering: pixelated; 
+      opacity: 0.9;
+    }
+
+    #status-controls-row {
+      height:46px; display:flex; align-items:center; justify-content:space-evenly;
+      padding:0 5px; background: rgba(0,0,0,0.05);
+    }
+
+    .s-btn{
+      cursor:pointer; padding:10px 18px; border-radius:2px;
+      transition:all 0.1s; text-align:center; white-space:nowrap;
+      font-weight:bold; font-size:13px; border:1px solid rgba(255,255,255,0.1);
+      flex:1; margin:0 4px; max-width:100px;
+    }
+    .s-btn:active{ background-color:rgba(255,255,255,0.3); transform:translateY(1px); }
+
+    #vol-popup {
+      position:absolute; bottom:calc(55px + env(safe-area-inset-bottom));
+      left:50%; transform:translateX(-50%);
+      background:#111; border:1px solid #555; padding:12px 18px;
+      display:none; align-items:center; gap:10px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.8); z-index:10000;
+      border-radius: 4px;
+    }
+    #vol-popup.show { display:flex; }
+    input[type=range] { -webkit-appearance:none; width:140px; height:4px; background:#555; outline:none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; background:var(--status-bg); cursor:pointer; border:2px solid #fff; border-radius:50%; }
+
+    @keyframes fadeOut { 0%{opacity:1;} 100%{opacity:0;} }
+    .copied-anim { animation:fadeOut 1.5s forwards; color:#87d75f !important; }
+
+    @media (max-width:600px){
+      body{ font-size:15px; }
+      .s-btn{ padding:10px 5px; font-size:12px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="terminal">
+    <div class="line c-user">SomaFMcore: System Ready. Music On.</div>
+    <div class="line c-dim">Kernel: WebAudio / Canvas / HLS</div>
+    <div class="line c-dim">----------------------------------------</div>
+    <div id="output"></div>
+  </div>
+
+  <div id="input-line">
+    <span id="prompt-span">
+      <span class="c-user">user@somafm</span><span class="c-dim">:</span><span class="c-path" id="path-display">~</span><span class="c-dim">$</span>
+    </span>
+    <div id="input-wrapper">
+      <span id="typed-display" class="c-cmd"></span><span id="cursor"></span>
+      <input type="text" id="cmd-input" autocomplete="off" spellcheck="false" autofocus />
+    </div>
+  </div>
+
+  <div id="status-bar">
+    <div id="status-info-row">
+      <div id="info-track-container" class="clickable" onclick="copyTrackFromStatus(this)">
+        <div id="info-label">NOW PLAYING</div>
+        <div id="info-track">Waiting for signal...</div>
+      </div>
+      <div id="info-meta">
+        <canvas id="vis-canvas" width="32" height="12"></canvas>
+      </div>
+    </div>
+
+    <div id="status-controls-row">
+      <!-- Buttons injected by JS -->
+    </div>
+
+    <div id="vol-popup">
+      <span style="color:#aaa; font-size:12px;">VOL</span>
+      <input type="range" id="vol-slider" min="0" max="100" value="80">
+      <span id="vol-val" style="color:#fff; font-size:12px; width:30px; text-align:right;">80%</span>
+    </div>
+  </div>
+
+  <audio id="audio-player" crossorigin="anonymous"></audio>
+
+  <script>
+    // --- DATA ---
+    const SOMA_CHANNELS_API = "https://api.somafm.com/channels.json";
+    const SOMA_SONGS_URL = (id) => `https://somafm.com/songs/${encodeURIComponent(id)}.json`;
+
+    const EXTENDED_STATIONS = [
+      { id:"groovesalad",    name:"Groove Salad",    streamUrl:"https://ice2.somafm.com/groovesalad-128-aac" },
+      { id:"dronezone",      name:"Drone Zone",      streamUrl:"https://ice2.somafm.com/dronezone-128-aac" },
+      { id:"deepspaceone",   name:"Deep Space One",  streamUrl:"https://ice2.somafm.com/deepspaceone-128-aac" },
+      { id:"suburbsofgoa",   name:"Suburbs of Goa",  streamUrl:"https://ice2.somafm.com/suburbsofgoa-128-aac" },
+      { id:"vaporwaves",     name:"Vaporwaves",      streamUrl:"https://ice2.somafm.com/vaporwaves-128-aac" },
+      { id:"darkzone",       name:"Dark Zone",       streamUrl:"https://ice2.somafm.com/darkzone-128-aac" },
+      { id:"defcon",         name:"DEF CON Radio",   streamUrl:"https://ice2.somafm.com/defcon-128-aac" },
+      { id:"secretagent",    name:"Secret Agent",    streamUrl:"https://ice2.somafm.com/secretagent-128-aac" },
+      { id:"lush",           name:"Lush",            streamUrl:"https://ice2.somafm.com/lush-128-aac" },
+      { id:"beatblender",    name:"Beat Blender",    streamUrl:"https://ice2.somafm.com/beatblender-128-aac" },
+      { id:"spacestation",   name:"Space Station",   streamUrl:"https://ice2.somafm.com/spacestation-128-aac" },
+      { id:"poptron",        name:"PopTron",         streamUrl:"https://ice2.somafm.com/poptron-128-aac" },
+      { id:"indiepop",       name:"Indie Pop Rocks", streamUrl:"https://ice2.somafm.com/indiepop-128-aac" },
+      { id:"fluid",          name:"Fluid",           streamUrl:"https://ice2.somafm.com/fluid-128-aac" },
+      { id:"cliqhop",        name:"Cliqhop idm",     streamUrl:"https://ice2.somafm.com/cliqhop-128-aac" },
+      { id:"dubstep",        name:"Dub Step Beyond", streamUrl:"https://ice2.somafm.com/dubstep-128-aac" },
+      { id:"u80s",           name:"Underground 80s", streamUrl:"https://ice2.somafm.com/u80s-128-aac" },
+      { id:"synphaera",      name:"Synphaera",       streamUrl:"https://ice2.somafm.com/synphaera-128-aac" },
+      { id:"thetrip",        name:"The Trip",        streamUrl:"https://ice2.somafm.com/thetrip-128-aac" },
+      { id:"thistle",        name:"ThistleRadio",    streamUrl:"https://ice2.somafm.com/thistle-128-aac" }
+    ];
+
+    // --- STATE ---
+    const STATELIST = 1;
+    const STATEPLAY = 2;
+    let appState = STATELIST;
+    let volume = 0.8;
+    
+    let stations = [];
+    let currentStation = null;
+    let hls = null;
+    let nowPlayingTimer = null;
+    let lastNowPlayingText = "";
+    let lastTrackPrinted = "";
+
+    // --- AUDIO VISUALIZER STATE ---
+    let audioCtx, analyser, sourceNode;
+    let visDataArray;
+    let isVisRunning = false;
+    const VIS_COLS = 16; 
+
+    // --- DOM ---
+    const outputDiv = document.getElementById("output");
+    const terminalDiv = document.getElementById("terminal");
+    const inputField = document.getElementById("cmd-input");
+    const typedDisplay = document.getElementById("typed-display");
+    const pathDisplay = document.getElementById("path-display");
+    const audioPlayer = document.getElementById("audio-player");
+    
+    const infoTrack = document.getElementById("info-track");
+    const infoLabel = document.getElementById("info-label");
+    const metaVis = document.getElementById("info-meta");
+    const controlsRow = document.getElementById("status-controls-row");
+    const volPopup = document.getElementById("vol-popup");
+
+    // --- HELPERS ---
+    function scrollToBottom(){ 
+      terminalDiv.scrollTop = terminalDiv.scrollHeight; 
+    }
+
+    function printPromptLog(cmd){
+      const path = appState === STATEPLAY && currentStation 
+        ? `~/${currentStation.id}` 
+        : `~`;
+      const html = `<span class="c-user">user@somafm</span><span class="c-dim">:</span><span class="c-path">${path}</span><span class="c-dim">$</span> <span class="c-cmd">${escapeHtml(cmd)}</span>`;
+      print(html);
+    }
+
+    function print(html, cssClass=""){
+      const div = document.createElement("div");
+      div.className = `line ${cssClass}`.trim();
+      div.innerHTML = html;
+      outputDiv.appendChild(div);
+      scrollToBottom();
+    }
+
+    function escapeHtml(s){
+      return (s || "").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    function escapeAttr(s){ return (s||"").toString().replace(/"/g, "&quot;"); }
+
+    function updatePathDisplay(){
+      if(appState === STATEPLAY && currentStation){
+        pathDisplay.innerText = `~/${currentStation.id}`;
+      } else {
+        pathDisplay.innerText = "~";
+      }
+    }
+
+    // --- VISUALIZER LOGIC ---
+    function initAudioContext() {
+      if (audioCtx) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 64; 
+      analyser.smoothingTimeConstant = 0.8;
+      
+      const bufferLength = analyser.frequencyBinCount;
+      visDataArray = new Uint8Array(bufferLength);
+
+      try {
+        sourceNode = audioCtx.createMediaElementSource(audioPlayer);
+        sourceNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+      } catch(e) {
+        console.warn("Audio Context Error (CORS likely):", e);
+      }
+    }
+
+    function drawVisualizer() {
+      if (!isVisRunning) return;
+      requestAnimationFrame(drawVisualizer);
+      
+      const canvas = document.getElementById("vis-canvas");
+      if(!canvas) return;
+      const ctx = canvas.getContext("2d");
+      
+      if(analyser) analyser.getByteFrequencyData(visDataArray);
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const w = canvas.width;
+      const h = canvas.height;
+      const cols = VIS_COLS; 
+      const colW = Math.floor(w / cols);
+      const gap = 1;
+
+      for (let i = 0; i < cols; i++) {
+        // Skip lowest frequencies (0-2) to avoid DC offset/hum
+        const dataIndex = Math.floor(i + 2); 
+        const value = visDataArray ? visDataArray[dataIndex] || 0 : 0;
+        
+        // Scale height
+        const percent = value / 255;
+        const barHeight = Math.floor(percent * h);
+        
+        for (let y = 0; y < barHeight; y++) {
+          // Gradient Logic (pixel coordinates are inverted)
+          // y=0 is bottom visually here
+          if (y < 4) ctx.fillStyle = "#4ec9b0";       // Teal
+          else if (y < 8) ctx.fillStyle = "#fce94f";  // Yellow
+          else ctx.fillStyle = "#d7005f";             // Red/Pink
+
+          // Draw pixel
+          ctx.fillRect(i * colW, h - 1 - y, colW - gap, 1); 
+        }
+      }
+    }
+
+    // --- STATUS BAR ---
+    function updateStatus(){
+      let btns = `<div class="s-btn" onclick="uiExec('cls')">CLS</div>`;
+      
+      if (appState === STATEPLAY) {
+        btns += `<div class="s-btn" onclick="uiExec('space')">PAUSE</div>`;
+        btns += `<div class="s-btn" onclick="toggleVolume(event)">VOL</div>`;
+        btns += `<div class="s-btn" onclick="uiExec('home')">HOME</div>`;
+        
+        infoLabel.innerText = currentStation ? currentStation.name.toUpperCase() : "NOW PLAYING";
+        infoTrack.innerText = lastNowPlayingText || "Fetching metadata...";
+        infoTrack.dataset.track = lastNowPlayingText;
+        
+        // Ensure canvas exists
+        if(!document.getElementById("vis-canvas")){
+           metaVis.innerHTML = `<canvas id="vis-canvas" width="32" height="12"></canvas>`;
+        }
+      } else {
+        infoLabel.innerText = "STATUS";
+        infoTrack.innerText = "System Ready. Select frequency.";
+        infoTrack.dataset.track = "";
+        // Clear visualization on stop
+        const canvas = document.getElementById("vis-canvas");
+        if(canvas) {
+           const ctx = canvas.getContext("2d");
+           ctx.clearRect(0,0,canvas.width,canvas.height);
+        }
+      }
+      controlsRow.innerHTML = btns;
+    }
+
+    // --- VOLUME ---
+    window.toggleVolume = function(e){
+      e.stopPropagation(); e.preventDefault();
+      inputField.blur();
+      volPopup.classList.toggle("show");
+    };
+    document.getElementById("vol-slider").addEventListener("input", (e)=>{
+      volume = e.target.value / 100;
+      audioPlayer.volume = volume;
+      document.getElementById("vol-val").innerText = Math.round(volume*100) + "%";
+    });
+    document.addEventListener("click", (e)=>{
+      if(!e.target.closest("#vol-popup") && !e.target.closest(".s-btn")) volPopup.classList.remove("show");
+    });
+
+    // --- COPY ---
+    async function copyToClip(text){
+      if(!text) return;
+      try { await navigator.clipboard.writeText(text); return true; } 
+      catch { 
+        const t = document.createElement("textarea"); t.value=text; 
+        document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t);
+        return true;
+      }
+    }
+    window.copyTrack = function(el){
+      const txt = el.dataset.track;
+      if(txt) copyToClip(txt);
+    };
+    window.copyTrackFromStatus = async function(el){
+      const track = infoTrack.dataset.track;
+      if(!track) return;
+      await copyToClip(track);
+      
+      const orig = infoTrack.innerText;
+      infoTrack.classList.add("copied-anim");
+      infoTrack.innerText = "COPIED TO CLIPBOARD";
+      setTimeout(()=>{
+        infoTrack.innerText = orig;
+        infoTrack.classList.remove("copied-anim");
+      }, 1500);
+    };
+
+    // --- LOGIC ---
+    window.uiExec = function(cmd){
+      inputField.blur();
+      handleCommand(cmd, true);
+    };
+
+    function execInput(){
+      const cmd = inputField.value;
+      inputField.value = "";
+      typedDisplay.innerText = "";
+      printPromptLog(cmd);
+      handleCommand(cmd, false);
+      scrollToBottom();
+    }
+
+    function handleCommand(raw, fromUI){
+      const cmd = raw.trim().toLowerCase();
+      if(!cmd) return;
+
+      const num = parseInt(cmd, 10);
+      if(!isNaN(num)){
+        if(stations[num-1]) playStation(num-1);
+        else print(`bash: ${escapeHtml(cmd)}: frequency index out of range`, "c-err");
+        return;
+      }
+
+      if (cmd === "cls") { outputDiv.innerHTML = ""; return; }
+      
+      if (cmd === "home" || cmd === "back" || cmd === "esc") {
+        stopPlayback();
+        renderList();
+        return;
+      }
+      
+      if (cmd === "space" || cmd === "pause") {
+        if(appState !== STATEPLAY) return;
+        if(audioPlayer.paused) {
+          audioPlayer.play();
+          if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+          print("Signal resumed.", "c-dim");
+        } else {
+          audioPlayer.pause();
+          print("Signal paused.", "c-dim");
+        }
+        return;
+      }
+
+      print(`bash: ${escapeHtml(cmd)}: command not found`, "c-err");
+    }
+
+    // --- DATA FETCHING ---
+    async function loadStations(){
+      try{
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), 3000); 
+        
+        const r = await fetch(SOMA_CHANNELS_API, { signal: controller.signal });
+        clearTimeout(id);
+        
+        const d = await r.json();
+        const loaded = d.channels.map(ch => ({
+          id: ch.id,
+          name: ch.title,
+          streamUrl: getBestStream(ch.playlists)
+        })).sort((a,b)=>a.name.localeCompare(b.name));
+        
+        if(loaded.length > 0) return loaded;
+        throw new Error("No data");
+      }catch(e){
+        return EXTENDED_STATIONS.sort((a,b)=>a.name.localeCompare(b.name));
+      }
+    }
+
+    function getBestStream(pls){
+      if(!Array.isArray(pls)) return "";
+      const p = pls.find(x => x.url?.includes("128-aac")) || pls[0];
+      return p?.url || "";
+    }
+
+    function renderList(){
+      appState = STATELIST;
+      currentStation = null;
+      updatePathDisplay();
+      
+      print(`<span class="c-path">frequencies@somafm</span>: listing available uplinks...`, "c-path");
+      
+      let html = `<div class="stations-grid">`;
+      stations.forEach((st, i) => {
+        const num = (i+1).toString().padStart(2,"0");
+        html += `<div class="station-item clickable" onclick="uiExec('${i+1}')"><span class="c-dim">${num}</span> ${escapeHtml(st.name)}</div>`;
+      });
+      html += `</div>`;
+      print(html);
+      updateStatus();
+    }
+
+    async function playStation(idx){
+      const st = stations[idx];
+      if(!st) return;
+
+      if(appState === STATEPLAY) stopPlayback();
+      
+      // Init Audio Context on user action
+      if(!audioCtx) initAudioContext();
+      if(audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      appState = STATEPLAY;
+      currentStation = st;
+      updatePathDisplay();
+      updateStatus();
+
+      print(`Initializing uplink to <span class="c-vis">${escapeHtml(st.name)}</span>...`, "c-dim");
+
+      let url = st.streamUrl;
+      if(hls) { hls.destroy(); hls=null; }
+      
+      if(url.endsWith(".pls") || url.endsWith(".m3u")) {
+         url = `https://ice2.somafm.com/${st.id}-128-aac`;
+      }
+
+      if(url.includes(".m3u8") && Hls.isSupported()){
+        hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(audioPlayer);
+      } else {
+        audioPlayer.src = url;
+      }
+      audioPlayer.volume = volume;
+      
+      audioPlayer.play().then(()=>{
+         print(`Connection established.`, "c-dim");
+         
+         // Start visualizer
+         isVisRunning = true;
+         drawVisualizer();
+         
+         startPolling(st.id);
+      }).catch(e=>{
+         print(`Connection failed: ${e.message}`, "c-err");
+         print(`Retrying with alternate freq...`, "c-dim");
+         audioPlayer.src = `https://ice2.somafm.com/${st.id}-128-mp3`;
+         audioPlayer.play().then(() => {
+            isVisRunning = true;
+            drawVisualizer();
+         }).catch(err => print("Backup failed.", "c-err"));
+      });
+    }
+
+    function stopPlayback(){
+      isVisRunning = false;
+      audioPlayer.pause();
+      audioPlayer.src = "";
+      if(hls) { hls.destroy(); hls=null; }
+      stopPolling();
+      
+      lastTrackPrinted = "";
+      lastNowPlayingText = "";
+    }
+
+    // --- POLLING ---
+    function startPolling(id){
+      stopPolling();
+      const tick = async () => {
+        try {
+          const r = await fetch(SOMA_SONGS_URL(id));
+          const d = await r.json();
+          const s = d.songs[0];
+          const txt = `${s.artist} — ${s.title}`;
+          
+          if(txt && txt !== lastNowPlayingText){
+             lastNowPlayingText = txt;
+             updateStatus();
+             
+             if(txt !== lastTrackPrinted){
+               lastTrackPrinted = txt;
+               print(
+                 `<div class="track-highlight clickable" onclick="copyTrack(this)" data-track="${escapeAttr(txt)}">♪ ${escapeHtml(txt)}</div>`
+               );
+             }
+          }
+        } catch(e) { }
+      };
+      tick();
+      nowPlayingTimer = setInterval(tick, 15000);
+    }
+
+    function stopPolling(){
+      clearInterval(nowPlayingTimer);
+    }
+
+    // --- INIT ---
+    window.onload = async () => {
+      stations = await loadStations();
+      print(`Loaded ${stations.length} channels.`);
+      renderList();
+      inputField.focus();
+    };
+
+    // --- EVENTS ---
+    inputField.addEventListener("input", () => {
+      typedDisplay.innerText = inputField.value;
+      scrollToBottom();
+    });
+
+    inputField.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") execInput();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.target === inputField) return;
+      if(e.key === " " && appState === STATEPLAY) { e.preventDefault(); uiExec("space"); }
+      else if(e.key === "Escape"){ uiExec("home"); }
+      else if(e.key.length === 1 && !e.ctrlKey && !e.altKey){ inputField.focus(); }
+    });
+    
+    document.addEventListener("click", (e)=>{
+      if(!e.target.closest("#status-bar") && !e.target.closest(".clickable")) inputField.focus();
+    });
+  </script>
+</body>
+</html>
