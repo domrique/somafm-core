@@ -339,6 +339,8 @@
     let playbackStartedAt = null;
     let currentStreamInfo = "";
     let streamState = "OFFLINE";
+    let userPausedPlayback = false;
+    let debugMode = false;
     let hls = null;
     let nowPlayingTimer = null;
     let nowPlayingPollToken = 0;
@@ -476,6 +478,15 @@
     function setStreamState(nextState){
       streamState = nextState;
       updateTelemetry();
+    }
+
+    function logAudioDebug(eventName){
+      if(!debugMode) return;
+      const err = audioPlayer.error ? ` err=${audioPlayer.error.code}` : "";
+      print(
+        `audio: ${escapeHtml(eventName)} paused=${audioPlayer.paused} ready=${audioPlayer.readyState} net=${audioPlayer.networkState} state=${escapeHtml(streamState)}${err}`,
+        "c-dim"
+      );
     }
 
     // --- VISUALIZER LOGIC ---
@@ -688,6 +699,13 @@
         printHelp();
         return;
       }
+
+      if (cmd === "debug") {
+        debugMode = !debugMode;
+        print(`debug: ${debugMode ? "on" : "off"}`, "c-dim");
+        if(debugMode) logAudioDebug("snapshot");
+        return;
+      }
       
       if (cmd === "home" || cmd === "back" || cmd === "esc") {
         if(appState === STATELIST) {
@@ -710,6 +728,7 @@
       
       if (cmd === "stop") {
         if(!hasActivePlayback()) return;
+        userPausedPlayback = false;
         stopPlayback();
         updateStatus();
         print("Signal stopped.", "c-dim");
@@ -724,6 +743,7 @@
       if (cmd === "space" || cmd === "pause") {
         if(!hasActivePlayback()) return;
         if(audioPlayer.paused) {
+          userPausedPlayback = false;
           setStreamState("CONNECTING");
           audioPlayer.play();
           if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
@@ -732,6 +752,7 @@
           setStreamState("ONLINE");
           print("Signal resumed.", "c-dim");
         } else {
+          userPausedPlayback = true;
           audioPlayer.pause();
           isVisRunning = false;
           setStreamState("PAUSED");
@@ -753,6 +774,7 @@
       print(`<span class="c-cmd">mute</span> / <span class="c-cmd">unmute</span> toggle audio mute`);
       print(`<span class="c-cmd">home</span> / <span class="c-cmd">esc</span> show station list without stopping`);
       print(`<span class="c-cmd">stop</span> stop playback`);
+      print(`<span class="c-cmd">debug</span> toggle audio event log`);
     }
 
     // --- DATA FETCHING ---
@@ -849,6 +871,7 @@
       appState = STATEPLAY;
       currentStation = st;
       playbackActive = true;
+      userPausedPlayback = false;
       setStreamState("CONNECTING");
       setLastStationId(st.id);
       updatePathDisplay();
@@ -914,6 +937,7 @@
     function stopPlayback(opts={}){
       isVisRunning = false;
       playbackActive = false;
+      userPausedPlayback = false;
       playbackStartedAt = null;
       currentStreamInfo = "";
       streamState = "OFFLINE";
@@ -931,6 +955,18 @@
         updatePathDisplay();
       }
       updateTelemetry();
+    }
+
+    function recoverUnexpectedPause(reason){
+      if(!hasActivePlayback() || userPausedPlayback) return;
+      setStreamState("CONNECTING");
+      audioPlayer.play().then(()=>{
+        setStreamState("ONLINE");
+      }).catch(() => {
+        setStreamState("PAUSED");
+        print(`Signal hold: ${reason}. Tap PLAY to resume.`, "c-dim");
+        updateStatus();
+      });
     }
 
     // --- POLLING ---
@@ -999,19 +1035,30 @@
     });
 
     audioPlayer.addEventListener("waiting", () => {
+      logAudioDebug("waiting");
       if(hasActivePlayback() && !audioPlayer.paused) setStreamState("BUFFERING");
     });
     audioPlayer.addEventListener("stalled", () => {
+      logAudioDebug("stalled");
       if(hasActivePlayback() && !audioPlayer.paused) setStreamState("BUFFERING");
     });
     audioPlayer.addEventListener("playing", () => {
+      logAudioDebug("playing");
       if(hasActivePlayback()) setStreamState("ONLINE");
     });
     audioPlayer.addEventListener("pause", () => {
-      if(hasActivePlayback()) setStreamState("PAUSED");
+      logAudioDebug("pause");
+      if(!hasActivePlayback()) return;
+      if(userPausedPlayback) setStreamState("PAUSED");
+      else recoverUnexpectedPause("unexpected pause");
     });
     audioPlayer.addEventListener("error", () => {
+      logAudioDebug("error");
       if(hasActivePlayback()) setStreamState("OFFLINE");
+    });
+    audioPlayer.addEventListener("ended", () => {
+      logAudioDebug("ended");
+      recoverUnexpectedPause("stream ended");
     });
 
     document.addEventListener("keydown", (e) => {
