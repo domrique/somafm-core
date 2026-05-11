@@ -338,8 +338,11 @@
     let playbackActive = false;
     let playbackStartedAt = null;
     let currentStreamInfo = "";
+    let currentStreamUrl = "";
     let streamState = "OFFLINE";
     let userPausedPlayback = false;
+    let suppressPauseRecovery = false;
+    let reconnectInFlight = false;
     let debugMode = false;
     let hls = null;
     let nowPlayingTimer = null;
@@ -455,6 +458,12 @@
       if(lower.includes("aac")) return "AAC";
       if(lower.includes("mp3")) return "MP3";
       return "STREAM";
+    }
+
+    function cacheBustUrl(url){
+      if(!url) return "";
+      const sep = url.includes("?") ? "&" : "?";
+      return `${url}${sep}_=${Date.now()}`;
     }
 
     function formatUptime(){
@@ -890,6 +899,7 @@
       if(url.endsWith(".pls") || url.endsWith(".m3u")) {
          url = `https://ice2.somafm.com/${st.id}-128-aac`;
       }
+      currentStreamUrl = url;
       currentStreamInfo = parseStreamInfo(url);
       updateTelemetry();
 
@@ -916,8 +926,10 @@
       }).catch(e=>{
          print(`Connection failed: ${e.message}`, "c-err");
          print(`Retrying with alternate freq...`, "c-dim");
-         audioPlayer.src = `https://ice2.somafm.com/${st.id}-128-mp3`;
-         currentStreamInfo = parseStreamInfo(audioPlayer.src);
+         const backupUrl = `https://ice2.somafm.com/${st.id}-128-mp3`;
+         currentStreamUrl = backupUrl;
+         audioPlayer.src = backupUrl;
+         currentStreamInfo = parseStreamInfo(backupUrl);
          setStreamState("CONNECTING");
          audioPlayer.play().then(() => {
             playbackStartedAt = Date.now();
@@ -940,8 +952,11 @@
       userPausedPlayback = false;
       playbackStartedAt = null;
       currentStreamInfo = "";
+      currentStreamUrl = "";
       streamState = "OFFLINE";
+      suppressPauseRecovery = true;
       audioPlayer.pause();
+      suppressPauseRecovery = false;
       audioPlayer.src = "";
       if(hls) { hls.destroy(); hls=null; }
       stopPolling();
@@ -959,10 +974,41 @@
 
     function recoverUnexpectedPause(reason){
       if(!hasActivePlayback() || userPausedPlayback) return;
+      reconnectCurrentStream(reason);
+    }
+
+    function reconnectCurrentStream(reason){
+      if(!hasActivePlayback() || !currentStreamUrl || reconnectInFlight) return;
+      reconnectInFlight = true;
       setStreamState("CONNECTING");
+      logAudioDebug(`reconnect:${reason}`);
+
+      const reconnectUrl = cacheBustUrl(currentStreamUrl);
+      suppressPauseRecovery = true;
+      audioPlayer.pause();
+
+      if(hls) { hls.destroy(); hls = null; }
+      if(currentStreamUrl.includes(".m3u8") && Hls.isSupported()){
+        hls = new Hls();
+        hls.loadSource(reconnectUrl);
+        hls.attachMedia(audioPlayer);
+      } else {
+        audioPlayer.src = reconnectUrl;
+      }
+
+      audioPlayer.volume = volume;
+      audioPlayer.muted = isMuted;
+      audioPlayer.load();
+      suppressPauseRecovery = false;
+
       audioPlayer.play().then(()=>{
+        reconnectInFlight = false;
+        if(!playbackStartedAt) playbackStartedAt = Date.now();
+        isVisRunning = true;
+        drawVisualizer();
         setStreamState("ONLINE");
       }).catch(() => {
+        reconnectInFlight = false;
         setStreamState("PAUSED");
         print(`Signal hold: ${reason}. Tap PLAY to resume.`, "c-dim");
         updateStatus();
@@ -1048,6 +1094,7 @@
     });
     audioPlayer.addEventListener("pause", () => {
       logAudioDebug("pause");
+      if(suppressPauseRecovery) return;
       if(!hasActivePlayback()) return;
       if(userPausedPlayback) setStreamState("PAUSED");
       else recoverUnexpectedPause("unexpected pause");
