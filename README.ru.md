@@ -4,7 +4,9 @@
 
 SomaFM Core - легкий веб-плеер для радиостанций SomaFM в стиле терминала. Работает прямо в браузере: без сервера, сборки, базы данных и регистрации.
 
-![Скриншот](image.jpg)
+Live-версия: [domrique.github.io/somafm-core](https://domrique.github.io/somafm-core/)
+
+![Скриншот SomaFM Core](assets/screenshot-main.png)
 
 ## Возможности
 

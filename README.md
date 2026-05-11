@@ -4,7 +4,9 @@
 
 SomaFM Core is a lightweight single-file web radio player for SomaFM stations, built as a terminal-style interface. It runs directly in the browser and needs no server, build step, database, or account.
 
-![Screenshot](image.jpg)
+Live version: [domrique.github.io/somafm-core](https://domrique.github.io/somafm-core/)
+
+![SomaFM Core screenshot](assets/screenshot-main.png)
 
 ## Features
 
