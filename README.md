@@ -1,48 +1,74 @@
-# SomaFM Core 📻
+# SomaFM Core
 
-> **Poor Man's Radio for Everyone.**
-> A minimalist, terminal-style web player for SomaFM radio stations.
+> Poor Man's Radio for Everyone.
 
-**SomaFM Core** is a lightweight, single-file HTML player that turns your browser into a "hacker-style" radio station. No servers, no databases, no installation required. Just open the file and listen.
-### 🔴 [Launch Player (Live Demo)](https://domrique.github.io/somafm-core/)
+SomaFM Core is a lightweight single-file web radio player for SomaFM stations, built as a terminal-style interface. It runs directly in the browser and needs no server, build step, database, or account.
 
-<img width="801" height="723" alt="image" src="https://github.com/user-attachments/assets/095575df-2a13-4f48-960d-30e9a357d79b" />
-<img width="591" height="1237" alt="image" src="https://github.com/user-attachments/assets/8cfeab4d-7f9b-413d-94f8-6135f150a6d9" />
+![Screenshot](image.jpg)
 
+## Features
 
+- Terminal-style UI with typed commands and clickable station list.
+- SomaFM channel loading from the public SomaFM API with a built-in fallback list.
+- AAC / HLS playback support.
+- Live Web Audio visualizer in the status bar.
+- Now-playing metadata polling with clickable track copy.
+- Bottom control bar with play/pause, volume, random station, help, and home.
+- Volume popup with mute / unmute.
+- Last station restore via `last` / `resume`.
+- Random station playback via `random` / `rnd`.
+- Current station highlighting in the station list.
+- Mobile-friendly controls: tapping bottom buttons does not force the keyboard open.
+- `favicon.ico` included for browser tabs and installed shortcuts.
 
-## 🇷🇺 [Русская версия](README.ru.md)
+## Run
 
-## ✨ Features
-*   **Terminal UI**: Fully text-based interface inspired by CLI aesthetics.
-*   **Live Visualizer**: Built-in audio visualizer powered by Web Audio API.
-*   **SomaFM API**: Automatically fetches the live channel list (Groove Salad, Drone Zone, Def Con, etc.).
-*   **HLS & AAC**: Supports modern streaming formats.
-*   **Zero Dependencies**: Everything runs from a single `index.html`.
+### GitHub Pages
 
-## 🚀 How to Run
-### Option 1: GitHub Pages (Recommended)
-1.  Upload `index.html` to your repository.
-2.  Enable **GitHub Pages** in settings (`Settings` -> `Pages` -> `Branch: main`).
-3.  Open the provided URL.
+1. Upload `index.html` and `favicon.ico` to your repository.
+2. Enable GitHub Pages in `Settings` -> `Pages`.
+3. Select the branch that contains the files, usually `main`.
+4. Open the published URL.
 
-### Option 2: Local
-Simply download `index.html` and open it in any modern browser (Chrome, Firefox, Safari).
+GitHub Pages usually updates automatically after each commit. If the old version is still visible, hard-refresh the page with `Ctrl + F5`.
 
-## ⌨️ Controls
-You can control the player by typing commands or using keyboard shortcuts:
+### Local
+
+Open `index.html` in any modern browser.
+
+## Controls
+
+You can use the bottom bar, click a station, or type commands into the terminal prompt.
 
 | Command / Key | Action |
 | :--- | :--- |
-| `[number]` | Type station number (e.g., `1`, `7`) and hit Enter to play. |
-| `space` | Pause / Resume playback. |
-| `esc` / `home` | Stop music and return to station list. |
-| `cls` | Clear terminal screen. |
+| `[number]` | Play a station by its list number. |
+| `space` | Play / pause the current stream. |
+| `home` / `back` / `esc` | Show the station list without stopping playback. |
+| `random` / `rnd` | Play a random station. |
+| `last` / `resume` | Continue the last played station. |
+| `mute` | Toggle mute. |
+| `unmute` | Disable mute. |
+| `stop` | Stop playback completely. |
+| `help` / `man` | Show the short command reference. |
+| `cls` | Clear the terminal output. |
 
-## 🛠 Tech Stack
-*   HTML5 / CSS3 (CSS Variables for theming)
-*   Vanilla JavaScript (ES6+)
-*   SomaFM Public API
+## Files
+
+- `index.html` - the whole application.
+- `favicon.ico` - browser tab / shortcut icon.
+- `README.md` - English documentation.
+- `README.ru.md` - Russian documentation.
+
+## Tech Stack
+
+- HTML5 / CSS3
+- Vanilla JavaScript
+- Web Audio API
+- Canvas
+- hls.js
+- SomaFM public API
 
 ---
-*Created for educational purposes. Music streams provided by [SomaFM](https://somafm.com).*
+
+Created for educational and personal listening purposes. Music streams are provided by [SomaFM](https://somafm.com/).

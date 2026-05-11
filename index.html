@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>SomaFMcore: System Ready. Music On.</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
   <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js"></script>
 
@@ -96,6 +97,15 @@
     .station-item {
         white-space: nowrap;
     }
+    .station-current {
+      background-color: var(--cmd-color);
+      color: #111;
+      font-weight: bold;
+      padding: 0 4px;
+      border-radius: 2px;
+      box-shadow: 0 0 0 1px rgba(252, 233, 79, 0.45);
+    }
+    .station-current .c-dim { color: #333; }
 
     .track-highlight {
       background-color: var(--track-bg);
@@ -194,6 +204,12 @@
       border-radius: 4px;
     }
     #vol-popup.show { display:flex; }
+    #mute-btn {
+      cursor:pointer; border:1px solid #555; background:#181818; color:#fff;
+      font-family:inherit; font-size:12px; font-weight:bold;
+      padding:6px 9px; border-radius:2px;
+    }
+    #mute-btn.active { background:var(--track-bg); border-color:rgba(255,255,255,0.35); }
     input[type=range] { -webkit-appearance:none; width:140px; height:4px; background:#555; outline:none; }
     input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; background:var(--status-bg); cursor:pointer; border:2px solid #fff; border-radius:50%; }
 
@@ -222,7 +238,7 @@
     </span>
     <div id="input-wrapper">
       <span id="typed-display" class="c-cmd"></span><span id="cursor"></span>
-      <input type="text" id="cmd-input" autocomplete="off" spellcheck="false" autofocus />
+      <input type="text" id="cmd-input" autocomplete="off" spellcheck="false" />
     </div>
   </div>
 
@@ -245,6 +261,7 @@
       <span style="color:#aaa; font-size:12px;">VOL</span>
       <input type="range" id="vol-slider" min="0" max="100" value="80">
       <span id="vol-val" style="color:#fff; font-size:12px; width:30px; text-align:right;">80%</span>
+      <button type="button" id="mute-btn" onclick="toggleMute(event)">MUTE</button>
     </div>
   </div>
 
@@ -254,6 +271,7 @@
     // --- DATA ---
     const SOMA_CHANNELS_API = "https://api.somafm.com/channels.json";
     const SOMA_SONGS_URL = (id) => `https://somafm.com/songs/${encodeURIComponent(id)}.json`;
+    const LAST_STATION_KEY = "somafmcore:lastStationId";
 
     const EXTENDED_STATIONS = [
       { id:"groovesalad",    name:"Groove Salad",    streamUrl:"https://ice2.somafm.com/groovesalad-128-aac" },
@@ -283,6 +301,7 @@
     const STATEPLAY = 2;
     let appState = STATELIST;
     let volume = 0.8;
+    let isMuted = false;
     
     let stations = [];
     let currentStation = null;
@@ -311,6 +330,9 @@
     const metaVis = document.getElementById("info-meta");
     const controlsRow = document.getElementById("status-controls-row");
     const volPopup = document.getElementById("vol-popup");
+    const volSlider = document.getElementById("vol-slider");
+    const volVal = document.getElementById("vol-val");
+    const muteBtn = document.getElementById("mute-btn");
 
     // --- HELPERS ---
     function scrollToBottom(){ 
@@ -349,6 +371,38 @@
 
     function hasActivePlayback(){
       return playbackActive && currentStation;
+    }
+
+    function prefersDesktopInput(){
+      return window.matchMedia && window.matchMedia("(pointer: fine)").matches;
+    }
+
+    function focusCommandInput(){
+      if(prefersDesktopInput()) inputField.focus();
+    }
+
+    function getLastStationId(){
+      try { return localStorage.getItem(LAST_STATION_KEY) || ""; }
+      catch { return ""; }
+    }
+
+    function setLastStationId(id){
+      try { localStorage.setItem(LAST_STATION_KEY, id); }
+      catch { }
+    }
+
+    function findStationIndexById(id){
+      return stations.findIndex(st => st.id === id);
+    }
+
+    function getStationById(id){
+      return stations[findStationIndexById(id)] || null;
+    }
+
+    function refreshStationHighlight(){
+      document.querySelectorAll(".station-item").forEach(el => {
+        el.classList.toggle("station-current", !!currentStation && el.dataset.stationId === currentStation.id);
+      });
     }
 
     function controlButton(cmd, icon, label, extraAttr=""){
@@ -426,6 +480,8 @@
         const playIcon = audioPlayer.paused ? ">" : "II";
         btns += controlButton("uiExec('space')", playIcon, playLabel, `aria-label="${playLabel}"`);
         btns += controlButton("toggleVolume(event)", "", "VOL", `aria-label="Volume"`);
+        btns += controlButton("uiExec('random')", "", "RND", `aria-label="Random station"`);
+        btns += controlButton("uiExec('help')", "", "HELP", `aria-label="Help"`);
         if(appState !== STATELIST) {
           btns += controlButton("uiExec('home')", "~", "HOME", `aria-label="Home"`);
         }
@@ -445,8 +501,11 @@
            metaVis.innerHTML = `<canvas id="vis-canvas" width="32" height="12"></canvas>`;
         }
       } else {
+        const lastStation = getStationById(getLastStationId());
+        btns += controlButton("uiExec('random')", "", "RND", `aria-label="Random station"`);
+        btns += controlButton("uiExec('help')", "", "HELP", `aria-label="Help"`);
         infoLabel.innerText = "STATUS";
-        infoTrack.innerText = "System Ready. Select frequency.";
+        infoTrack.innerText = lastStation ? `Last signal: ${lastStation.name}. Type last.` : "System Ready. Select frequency.";
         infoTrack.dataset.track = "";
         // Clear visualization on stop
         const canvas = document.getElementById("vis-canvas");
@@ -464,10 +523,35 @@
       inputField.blur();
       volPopup.classList.toggle("show");
     };
-    document.getElementById("vol-slider").addEventListener("input", (e)=>{
+
+    function updateVolumeUi(){
+      volSlider.value = Math.round(volume * 100);
+      volVal.innerText = isMuted ? "MUTE" : Math.round(volume*100) + "%";
+      muteBtn.classList.toggle("active", isMuted);
+      muteBtn.innerText = isMuted ? "UNMUTE" : "MUTE";
+    }
+
+    function setMuted(nextMuted, shouldPrint=false){
+      isMuted = nextMuted;
+      audioPlayer.muted = isMuted;
+      updateVolumeUi();
+      if(shouldPrint) print(isMuted ? "Signal muted." : "Signal unmuted.", "c-dim");
+    }
+
+    window.toggleMute = function(e){
+      if(e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+      setMuted(!isMuted, true);
+    };
+
+    volSlider.addEventListener("input", (e)=>{
       volume = e.target.value / 100;
+      if(volume > 0) isMuted = false;
       audioPlayer.volume = volume;
-      document.getElementById("vol-val").innerText = Math.round(volume*100) + "%";
+      audioPlayer.muted = isMuted;
+      updateVolumeUi();
     });
     document.addEventListener("click", (e)=>{
       if(!e.target.closest("#vol-popup") && !e.target.closest(".s-btn")) volPopup.classList.remove("show");
@@ -528,6 +612,11 @@
       }
 
       if (cmd === "cls") { outputDiv.innerHTML = ""; return; }
+
+      if (cmd === "help" || cmd === "man") {
+        printHelp();
+        return;
+      }
       
       if (cmd === "home" || cmd === "back" || cmd === "esc") {
         if(appState === STATELIST) {
@@ -537,12 +626,27 @@
         renderList();
         return;
       }
+
+      if (cmd === "last" || cmd === "resume") {
+        playLastStation();
+        return;
+      }
+
+      if (cmd === "random" || cmd === "rnd") {
+        playRandomStation();
+        return;
+      }
       
       if (cmd === "stop") {
         if(!hasActivePlayback()) return;
         stopPlayback();
         updateStatus();
         print("Signal stopped.", "c-dim");
+        return;
+      }
+
+      if (cmd === "mute" || cmd === "unmute") {
+        setMuted(cmd === "mute" ? !isMuted : false, true);
         return;
       }
       
@@ -564,6 +668,17 @@
       }
 
       print(`bash: ${escapeHtml(cmd)}: command not found`, "c-err");
+    }
+
+    function printHelp(){
+      print(`<span class="c-path">man somafmcore</span>`, "c-path");
+      print(`<span class="c-cmd">[number]</span> play station by index`);
+      print(`<span class="c-cmd">space</span> play / pause`);
+      print(`<span class="c-cmd">random</span> / <span class="c-cmd">rnd</span> play random station`);
+      print(`<span class="c-cmd">last</span> resume last station`);
+      print(`<span class="c-cmd">mute</span> / <span class="c-cmd">unmute</span> toggle audio mute`);
+      print(`<span class="c-cmd">home</span> / <span class="c-cmd">esc</span> show station list without stopping`);
+      print(`<span class="c-cmd">stop</span> stop playback`);
     }
 
     // --- DATA FETCHING ---
@@ -604,11 +719,43 @@
       let html = `<div class="stations-grid">`;
       stations.forEach((st, i) => {
         const num = (i+1).toString().padStart(2,"0");
-        html += `<div class="station-item clickable" onclick="uiExec('${i+1}')"><span class="c-dim">${num}</span> ${escapeHtml(st.name)}</div>`;
+        const activeClass = currentStation && currentStation.id === st.id ? " station-current" : "";
+        html += `<div class="station-item clickable${activeClass}" data-station-id="${escapeAttr(st.id)}" onclick="uiExec('${i+1}')"><span class="c-dim">${num}</span> ${escapeHtml(st.name)}</div>`;
       });
       html += `</div>`;
       print(html);
+      refreshStationHighlight();
       updateStatus();
+    }
+
+    function printLastStationHint(){
+      const lastStation = getStationById(getLastStationId());
+      if(!lastStation) return;
+      print(
+        `last signal: <span class="c-vis">${escapeHtml(lastStation.name)}</span> ` +
+        `<span class="clickable c-cmd" onclick="uiExec('last')">[continue]</span>`,
+        "c-dim"
+      );
+    }
+
+    function playLastStation(){
+      const idx = findStationIndexById(getLastStationId());
+      if(idx < 0) {
+        print("No last signal stored.", "c-dim");
+        return;
+      }
+      playStation(idx);
+    }
+
+    function playRandomStation(){
+      if(!stations.length) return;
+      let idx = Math.floor(Math.random() * stations.length);
+      if(stations.length > 1 && currentStation) {
+        while(stations[idx].id === currentStation.id) {
+          idx = Math.floor(Math.random() * stations.length);
+        }
+      }
+      playStation(idx);
     }
 
     async function playStation(idx){
@@ -626,7 +773,9 @@
       appState = STATEPLAY;
       currentStation = st;
       playbackActive = true;
+      setLastStationId(st.id);
       updatePathDisplay();
+      refreshStationHighlight();
       updateStatus();
 
       print(`Initializing uplink to <span class="c-vis">${escapeHtml(st.name)}</span>...`, "c-dim");
@@ -685,6 +834,7 @@
       lastNowPlayingText = "";
       if(!opts.keepStatus) {
         currentStation = null;
+        refreshStationHighlight();
         if(appState === STATEPLAY) appState = STATELIST;
         updatePathDisplay();
       }
@@ -726,7 +876,9 @@
       stations = await loadStations();
       print(`Loaded ${stations.length} channels.`);
       renderList();
-      inputField.focus();
+      printLastStationHint();
+      updateVolumeUi();
+      focusCommandInput();
     };
 
     // --- EVENTS ---
@@ -750,11 +902,11 @@
       if(e.target === inputField) return;
       if(e.key === " " && hasActivePlayback()) { e.preventDefault(); uiExec("space"); }
       else if(e.key === "Escape"){ uiExec("home"); }
-      else if(e.key.length === 1 && !e.ctrlKey && !e.altKey){ inputField.focus(); }
+      else if(e.key.length === 1 && !e.ctrlKey && !e.altKey){ focusCommandInput(); }
     });
     
     document.addEventListener("click", (e)=>{
-      if(!e.target.closest("#status-bar") && !e.target.closest(".clickable")) inputField.focus();
+      if(!e.target.closest("#status-bar") && !e.target.closest(".clickable")) focusCommandInput();
     });
   </script>
 </body>
