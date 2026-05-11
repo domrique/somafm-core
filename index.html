@@ -116,6 +116,18 @@
 
     .clickable{ cursor:pointer; }
     .clickable:hover{ background-color:#333; color:#fff; text-decoration:underline; }
+    .station-current,
+    .station-current:hover,
+    .station-current:focus,
+    .station-current:active {
+      background-color: var(--cmd-color);
+      color: #111;
+      text-decoration: none;
+    }
+    .station-current .c-dim,
+    .station-current:hover .c-dim,
+    .station-current:focus .c-dim,
+    .station-current:active .c-dim { color: #333; }
 
     #input-line{
       position: fixed;
@@ -329,6 +341,7 @@
     let streamState = "OFFLINE";
     let hls = null;
     let nowPlayingTimer = null;
+    let nowPlayingPollToken = 0;
     let lastNowPlayingText = "";
     let lastTrackPrinted = "";
 
@@ -755,6 +768,8 @@
         const loaded = d.channels.map(ch => ({
           id: ch.id,
           name: ch.title,
+          description: ch.description || "",
+          genre: ch.genre || "",
           streamUrl: getBestStream(ch.playlists)
         })).sort((a,b)=>a.name.localeCompare(b.name));
         
@@ -841,6 +856,10 @@
       updateStatus();
 
       print(`Initializing uplink to <span class="c-vis">${escapeHtml(st.name)}</span>...`, "c-dim");
+      if(st.description){
+        const genre = st.genre ? `<span class="c-dim">[${escapeHtml(st.genre)}]</span> ` : "";
+        print(`${genre}${escapeHtml(st.description)}`);
+      }
 
       let url = st.streamUrl;
       if(hls) { hls.destroy(); hls=null; }
@@ -917,10 +936,13 @@
     // --- POLLING ---
     function startPolling(id){
       stopPolling();
+      const pollToken = ++nowPlayingPollToken;
       const tick = async () => {
         try {
+          if(pollToken !== nowPlayingPollToken) return;
           const r = await fetch(SOMA_SONGS_URL(id));
           const d = await r.json();
+          if(pollToken !== nowPlayingPollToken || !currentStation || currentStation.id !== id) return;
           const s = d.songs[0];
           const txt = `${s.artist} — ${s.title}`;
           
@@ -943,6 +965,8 @@
 
     function stopPolling(){
       clearInterval(nowPlayingTimer);
+      nowPlayingTimer = null;
+      nowPlayingPollToken++;
     }
 
     // --- INIT ---
