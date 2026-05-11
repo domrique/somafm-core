@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -335,29 +335,8 @@
       streamUrl
     });
 
-    // External radio policy: keep only stable HTTPS streams that fit the underground
-    // terminal vibe. Favor cult/non-pop stations and quality metal/rock/rap picks.
-    const EXTRA_STATIONS = [
-      ext("hirschmilch-psytrance", "Hirschmilch Psytrance", "psytrance", "Full-throttle psytrance from the German underground feed.", "https://hirschmilch.de:7501/psytrance.mp3"),
-      ext("hirschmilch-progressive", "Hirschmilch Progressive", "progressive", "Rolling progressive trance and deep hypnotic drive.", "https://hirschmilch.de:7501/progressive.mp3"),
-      ext("hirschmilch-prog-house", "Hirschmilch Prog-House", "prog-house", "Long-form progressive house with a night-drive pulse.", "https://hirschmilch.de:7501/prog-house.mp3"),
-      ext("hirschmilch-electronic", "Hirschmilch Electronic", "electronic", "Clean electronic cuts from melodic to club-adjacent.", "https://hirschmilch.de:7501/electronic.mp3"),
-      ext("hirschmilch-techno", "Hirschmilch Techno", "techno", "Straight machine rhythm from the Hirschmilch bunker.", "https://hirschmilch.de:7501/techno.mp3"),
-      ext("hirschmilch-chillout", "Hirschmilch Chillout", "chillout", "Downtempo psy-flavored decompression after the tunnel.", "https://hirschmilch.de:7501/chillout.mp3"),
-      ext("dublab", "dublab", "eclectic", "Los Angeles transmission for future roots, odd pop and deep selectors.", "https://dublab.out.airtime.pro/dublab_a"),
-      ext("the-lot-radio", "The Lot Radio", "electronic", "Brooklyn booth energy: live DJs, dance music and street-level sets.", "https://livepeercdn.studio/hls/85c28sa2o8wppm58/index.m3u8"),
-      ext("noods-radio", "Noods Radio", "leftfield", "Bristol independent radio with grime, ambient, punk and club detours.", "https://noods-radio.radiocult.fm/stream"),
-      ext("kiosk-radio", "Kiosk Radio", "eclectic", "Brussels booth culture: local selectors, oddball dance and global dust.", "https://kioskradiobxl.out.airtime.pro/kioskradiobxl_b"),
-      ext("operator-radio", "Operator Radio", "electronic", "Rotterdam frequency for DJs, electronic music and local culture.", "https://origin.streamnerd.nl/operator/operator/icecast.audio"),
-      ext("netil-radio", "Netil Radio", "community", "East London community radio with leftfield music and art-space energy.", "https://netilradio.out.airtime.pro/netilradio_a"),
-      ext("kexp", "KEXP", "indie-rock", "Seattle institution for indie, rock, hip-hop, live rooms and deep finds.", "https://kexp.streamguys1.com/kexp160.aac"),
-      ext("wxyc", "WXYC Chapel Hill", "college", "UNC freeform radio: noise, jazz, punk, global and basement discoveries.", "https://audio-mp3.ibiblio.org/wxyc.mp3"),
-      ext("radio-paradise-main", "Radio Paradise Main", "eclectic", "Human-sequenced rock, electronic and global cuts without ads.", "https://stream.radioparadise.com/aac-128"),
-      ext("radio-paradise-rock", "Radio Paradise Rock", "rock", "Deep rock mix: classic weight, modern edges and long arcs.", "https://stream.radioparadise.com/rock-128"),
-      ext("radio-paradise-mellow", "Radio Paradise Mellow", "mellow", "Slow-burn guitars, electronic shade and softer deep cuts.", "https://stream.radioparadise.com/mellow-128"),
-      ext("radio-paradise-global", "Radio Paradise Global", "global", "Worldwide grooves, folk fragments and border-crossing records.", "https://stream.radioparadise.com/global-128"),
-      ext("bigr-80s-metal", "Big R 80s Metal", "metal", "Hair, speed and classic heavy metal from the cassette-era vault.", "https://bigrradio.cdnstream1.com/5186_128")
-    ];
+    // Backup variant: SomaFM only. External stations are intentionally disabled here.
+    const EXTRA_STATIONS = [];
 
     // --- STATE ---
     const STATELIST = 1;
@@ -1142,7 +1121,7 @@
           const d = await r.json();
           if(pollToken !== nowPlayingPollToken || !currentStation || currentStation.id !== id) return;
           const s = d.songs[0];
-          const txt = `${s.artist} — ${s.title}`;
+          const txt = `${s.artist} â€” ${s.title}`;
           
           if(txt && txt !== lastNowPlayingText){
              lastNowPlayingText = txt;
@@ -1151,7 +1130,7 @@
              if(txt !== lastTrackPrinted){
                lastTrackPrinted = txt;
                print(
-                 `<div class="track-highlight clickable" onclick="copyTrack(this)" data-track="${escapeAttr(txt)}">♪ ${escapeHtml(txt)}</div>`
+                 `<div class="track-highlight clickable" onclick="copyTrack(this)" data-track="${escapeAttr(txt)}">â™ª ${escapeHtml(txt)}</div>`
                );
              }
           }
@@ -1237,3 +1216,4 @@
   </script>
 </body>
 </html>
+
