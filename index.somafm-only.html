@@ -359,6 +359,8 @@
     let hls = null;
     let nowPlayingTimer = null;
     let nowPlayingPollToken = 0;
+    let icyMetadataController = null;
+    let icyMetadataToken = 0;
     let lastNowPlayingText = "";
     let lastTrackPrinted = "";
 
@@ -486,6 +488,10 @@
 
     function supportsNowPlaying(st){
       return st && st.source !== "external";
+    }
+
+    function supportsIcyMetadata(st, url){
+      return st && st.source === "external" && url && !url.includes(".m3u8");
     }
 
     function formatUptime(){
@@ -967,8 +973,9 @@
          
          if(supportsNowPlaying(st)) startPolling(st.id);
          else {
-           stopPolling();
+           stopMetadata();
            lastNowPlayingText = "";
+           startIcyMetadata(st, currentStreamUrl);
          }
          updateStatus();
       }).catch(e=>{
@@ -986,8 +993,9 @@
             drawVisualizer();
             if(supportsNowPlaying(st)) startPolling(st.id);
             else {
-              stopPolling();
+              stopMetadata();
               lastNowPlayingText = "";
+              startIcyMetadata(st, currentStreamUrl);
             }
             updateStatus();
          }).catch(err => {
@@ -1011,7 +1019,7 @@
       suppressPauseRecovery = false;
       audioPlayer.src = "";
       if(hls) { hls.destroy(); hls=null; }
-      stopPolling();
+      stopMetadata();
       
       lastTrackPrinted = "";
       lastNowPlayingText = "";
@@ -1110,9 +1118,119 @@
       });
     }
 
+    function publishNowPlaying(txt){
+      if(!txt || txt === lastNowPlayingText) return;
+      lastNowPlayingText = txt;
+      updateStatus();
+
+      if(txt !== lastTrackPrinted){
+        lastTrackPrinted = txt;
+        print(
+          `<div class="track-highlight clickable" onclick="copyTrack(this)" data-track="${escapeAttr(txt)}">Ã¢â„¢Âª ${escapeHtml(txt)}</div>`
+        );
+      }
+    }
+
+    function parseIcyStreamTitle(meta){
+      const match = meta.match(/StreamTitle='([^']*)'/i) || meta.match(/StreamTitle="([^"]*)"/i);
+      if(!match) return "";
+      return match[1]
+        .replace(/\s+/g, " ")
+        .replace(/^[-\s]+|[-\s]+$/g, "")
+        .trim();
+    }
+
+    async function startIcyMetadata(st, url){
+      stopIcyMetadata();
+      if(!supportsIcyMetadata(st, url)) return;
+
+      const token = ++icyMetadataToken;
+      const controller = new AbortController();
+      icyMetadataController = controller;
+
+      try {
+        const r = await fetch(url, {
+          headers: { "Icy-MetaData": "1" },
+          cache: "no-store",
+          signal: controller.signal
+        });
+        const metaint = Number(r.headers.get("icy-metaint"));
+        if(token !== icyMetadataToken || !r.body || !metaint) return;
+
+        const reader = r.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let bytesUntilMeta = metaint;
+        let pendingMeta = [];
+        let pendingMetaRemaining = 0;
+
+        while(token === icyMetadataToken){
+          const chunk = await reader.read();
+          if(chunk.done) break;
+          let offset = 0;
+          const data = chunk.value;
+
+          while(offset < data.length && token === icyMetadataToken){
+            if(pendingMetaRemaining > 0){
+              const take = Math.min(pendingMetaRemaining, data.length - offset);
+              pendingMeta.push(data.slice(offset, offset + take));
+              offset += take;
+              pendingMetaRemaining -= take;
+
+              if(pendingMetaRemaining === 0){
+                const metaBytes = new Uint8Array(pendingMeta.reduce((sum, part) => sum + part.length, 0));
+                let pos = 0;
+                pendingMeta.forEach(part => {
+                  metaBytes.set(part, pos);
+                  pos += part.length;
+                });
+                pendingMeta = [];
+                const meta = decoder.decode(metaBytes).replace(/\0/g, "");
+                const title = parseIcyStreamTitle(meta);
+                if(title) publishNowPlaying(title);
+                bytesUntilMeta = metaint;
+              }
+              continue;
+            }
+
+            if(bytesUntilMeta > 0){
+              const skip = Math.min(bytesUntilMeta, data.length - offset);
+              offset += skip;
+              bytesUntilMeta -= skip;
+              continue;
+            }
+
+            const metaLength = data[offset] * 16;
+            offset += 1;
+            if(metaLength === 0){
+              bytesUntilMeta = metaint;
+              continue;
+            }
+            pendingMetaRemaining = metaLength;
+          }
+        }
+      } catch(e) {
+        if(debugMode && e.name !== "AbortError") {
+          print(`icy: ${escapeHtml(e.message)}`, "c-dim");
+        }
+      }
+    }
+
+    function stopIcyMetadata(){
+      icyMetadataToken++;
+      if(icyMetadataController){
+        icyMetadataController.abort();
+        icyMetadataController = null;
+      }
+    }
+
+    function stopMetadata(){
+      stopPolling();
+      stopIcyMetadata();
+    }
+
     // --- POLLING ---
     function startPolling(id){
-      stopPolling();
+      stopMetadata();
       const pollToken = ++nowPlayingPollToken;
       const tick = async () => {
         try {

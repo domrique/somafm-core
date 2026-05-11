@@ -344,12 +344,17 @@
       ext("hirschmilch-electronic", "Hirschmilch Electronic", "electronic", "Clean electronic cuts from melodic to club-adjacent.", "https://hirschmilch.de:7501/electronic.mp3"),
       ext("hirschmilch-techno", "Hirschmilch Techno", "techno", "Straight machine rhythm from the Hirschmilch bunker.", "https://hirschmilch.de:7501/techno.mp3"),
       ext("hirschmilch-chillout", "Hirschmilch Chillout", "chillout", "Downtempo psy-flavored decompression after the tunnel.", "https://hirschmilch.de:7501/chillout.mp3"),
+      ext("igfm-main", "Intergalactic FM", "electro", "Cyberpunk, Italo-disco and raw electro from The Hague.", "https://radio.intergalactic.fm/1"),
+      ext("nightwave-plaza", "Nightwave Plaza", "vaporwave", "Vaporwave, future funk and cassette-lit aesthetic beats.", "https://radio.plaza.one/mp3"),
+      ext("kfrp", "KFRP Radio", "underground-rap", "Underground hip-hop, horrorcore and dark instrumentals from Lincoln.", "https://radio.kfrp.live/listen/kfrp_radio/radio.mp3"),
+      ext("reggae141", "Reggae141", "roots-reggae", "Roots, rocksteady and dubwise pressure from the classic online reggae lane.", "https://hestia2.cdnstream.com/1301_128"),
       ext("dublab", "dublab", "eclectic", "Los Angeles transmission for future roots, odd pop and deep selectors.", "https://dublab.out.airtime.pro/dublab_a"),
       ext("the-lot-radio", "The Lot Radio", "electronic", "Brooklyn booth energy: live DJs, dance music and street-level sets.", "https://livepeercdn.studio/hls/85c28sa2o8wppm58/index.m3u8"),
       ext("noods-radio", "Noods Radio", "leftfield", "Bristol independent radio with grime, ambient, punk and club detours.", "https://noods-radio.radiocult.fm/stream"),
       ext("kiosk-radio", "Kiosk Radio", "eclectic", "Brussels booth culture: local selectors, oddball dance and global dust.", "https://kioskradiobxl.out.airtime.pro/kioskradiobxl_b"),
       ext("operator-radio", "Operator Radio", "electronic", "Rotterdam frequency for DJs, electronic music and local culture.", "https://origin.streamnerd.nl/operator/operator/icecast.audio"),
       ext("netil-radio", "Netil Radio", "community", "East London community radio with leftfield music and art-space energy.", "https://netilradio.out.airtime.pro/netilradio_a"),
+      ext("resonance-fm", "Resonance FM", "experimental", "London community radio for experimental sound and art.", "https://stream.resonance.fm/resonance"),
       ext("kexp", "KEXP", "indie-rock", "Seattle institution for indie, rock, hip-hop, live rooms and deep finds.", "https://kexp.streamguys1.com/kexp160.aac"),
       ext("wxyc", "WXYC Chapel Hill", "college", "UNC freeform radio: noise, jazz, punk, global and basement discoveries.", "https://audio-mp3.ibiblio.org/wxyc.mp3"),
       ext("radio-paradise-main", "Radio Paradise Main", "eclectic", "Human-sequenced rock, electronic and global cuts without ads.", "https://stream.radioparadise.com/aac-128"),
@@ -380,6 +385,8 @@
     let hls = null;
     let nowPlayingTimer = null;
     let nowPlayingPollToken = 0;
+    let icyMetadataController = null;
+    let icyMetadataToken = 0;
     let lastNowPlayingText = "";
     let lastTrackPrinted = "";
 
@@ -507,6 +514,10 @@
 
     function supportsNowPlaying(st){
       return st && st.source !== "external";
+    }
+
+    function supportsIcyMetadata(st, url){
+      return st && st.source === "external" && url && !url.includes(".m3u8");
     }
 
     function formatUptime(){
@@ -988,8 +999,9 @@
          
          if(supportsNowPlaying(st)) startPolling(st.id);
          else {
-           stopPolling();
+           stopMetadata();
            lastNowPlayingText = "";
+           startIcyMetadata(st, currentStreamUrl);
          }
          updateStatus();
       }).catch(e=>{
@@ -1007,8 +1019,9 @@
             drawVisualizer();
             if(supportsNowPlaying(st)) startPolling(st.id);
             else {
-              stopPolling();
+              stopMetadata();
               lastNowPlayingText = "";
+              startIcyMetadata(st, currentStreamUrl);
             }
             updateStatus();
          }).catch(err => {
@@ -1032,7 +1045,7 @@
       suppressPauseRecovery = false;
       audioPlayer.src = "";
       if(hls) { hls.destroy(); hls=null; }
-      stopPolling();
+      stopMetadata();
       
       lastTrackPrinted = "";
       lastNowPlayingText = "";
@@ -1131,9 +1144,119 @@
       });
     }
 
+    function publishNowPlaying(txt){
+      if(!txt || txt === lastNowPlayingText) return;
+      lastNowPlayingText = txt;
+      updateStatus();
+
+      if(txt !== lastTrackPrinted){
+        lastTrackPrinted = txt;
+        print(
+          `<div class="track-highlight clickable" onclick="copyTrack(this)" data-track="${escapeAttr(txt)}">â™ª ${escapeHtml(txt)}</div>`
+        );
+      }
+    }
+
+    function parseIcyStreamTitle(meta){
+      const match = meta.match(/StreamTitle='([^']*)'/i) || meta.match(/StreamTitle="([^"]*)"/i);
+      if(!match) return "";
+      return match[1]
+        .replace(/\s+/g, " ")
+        .replace(/^[-\s]+|[-\s]+$/g, "")
+        .trim();
+    }
+
+    async function startIcyMetadata(st, url){
+      stopIcyMetadata();
+      if(!supportsIcyMetadata(st, url)) return;
+
+      const token = ++icyMetadataToken;
+      const controller = new AbortController();
+      icyMetadataController = controller;
+
+      try {
+        const r = await fetch(url, {
+          headers: { "Icy-MetaData": "1" },
+          cache: "no-store",
+          signal: controller.signal
+        });
+        const metaint = Number(r.headers.get("icy-metaint"));
+        if(token !== icyMetadataToken || !r.body || !metaint) return;
+
+        const reader = r.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let bytesUntilMeta = metaint;
+        let pendingMeta = [];
+        let pendingMetaRemaining = 0;
+
+        while(token === icyMetadataToken){
+          const chunk = await reader.read();
+          if(chunk.done) break;
+          let offset = 0;
+          const data = chunk.value;
+
+          while(offset < data.length && token === icyMetadataToken){
+            if(pendingMetaRemaining > 0){
+              const take = Math.min(pendingMetaRemaining, data.length - offset);
+              pendingMeta.push(data.slice(offset, offset + take));
+              offset += take;
+              pendingMetaRemaining -= take;
+
+              if(pendingMetaRemaining === 0){
+                const metaBytes = new Uint8Array(pendingMeta.reduce((sum, part) => sum + part.length, 0));
+                let pos = 0;
+                pendingMeta.forEach(part => {
+                  metaBytes.set(part, pos);
+                  pos += part.length;
+                });
+                pendingMeta = [];
+                const meta = decoder.decode(metaBytes).replace(/\0/g, "");
+                const title = parseIcyStreamTitle(meta);
+                if(title) publishNowPlaying(title);
+                bytesUntilMeta = metaint;
+              }
+              continue;
+            }
+
+            if(bytesUntilMeta > 0){
+              const skip = Math.min(bytesUntilMeta, data.length - offset);
+              offset += skip;
+              bytesUntilMeta -= skip;
+              continue;
+            }
+
+            const metaLength = data[offset] * 16;
+            offset += 1;
+            if(metaLength === 0){
+              bytesUntilMeta = metaint;
+              continue;
+            }
+            pendingMetaRemaining = metaLength;
+          }
+        }
+      } catch(e) {
+        if(debugMode && e.name !== "AbortError") {
+          print(`icy: ${escapeHtml(e.message)}`, "c-dim");
+        }
+      }
+    }
+
+    function stopIcyMetadata(){
+      icyMetadataToken++;
+      if(icyMetadataController){
+        icyMetadataController.abort();
+        icyMetadataController = null;
+      }
+    }
+
+    function stopMetadata(){
+      stopPolling();
+      stopIcyMetadata();
+    }
+
     // --- POLLING ---
     function startPolling(id){
-      stopPolling();
+      stopMetadata();
       const pollToken = ++nowPlayingPollToken;
       const tick = async () => {
         try {
