@@ -268,7 +268,7 @@
     </div>
 
     <div id="status-telemetry-row">
-      <span id="status-telemetry">NO STREAM | VOL 80</span>
+      <span id="status-telemetry">NO STREAM | OFFLINE | UP --:-- | VOL 80</span>
     </div>
 
     <div id="status-controls-row">
@@ -326,6 +326,7 @@
     let playbackActive = false;
     let playbackStartedAt = null;
     let currentStreamInfo = "";
+    let streamState = "OFFLINE";
     let hls = null;
     let nowPlayingTimer = null;
     let lastNowPlayingText = "";
@@ -454,8 +455,14 @@
     function updateTelemetry(){
       const volumeText = isMuted ? "MUTE" : `VOL ${Math.round(volume * 100)}`;
       const streamText = hasActivePlayback() ? currentStreamInfo || "STREAM" : "NO STREAM";
+      const stateText = hasActivePlayback() ? streamState : "OFFLINE";
       const upText = hasActivePlayback() ? `UP ${formatUptime()}` : "UP --:--";
-      telemetryText.innerText = `${streamText} | ${upText} | ${volumeText}`;
+      telemetryText.innerText = `${streamText} | ${stateText} | ${upText} | ${volumeText}`;
+    }
+
+    function setStreamState(nextState){
+      streamState = nextState;
+      updateTelemetry();
     }
 
     // --- VISUALIZER LOGIC ---
@@ -704,14 +711,17 @@
       if (cmd === "space" || cmd === "pause") {
         if(!hasActivePlayback()) return;
         if(audioPlayer.paused) {
+          setStreamState("CONNECTING");
           audioPlayer.play();
           if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
           isVisRunning = true;
           drawVisualizer();
+          setStreamState("ONLINE");
           print("Signal resumed.", "c-dim");
         } else {
           audioPlayer.pause();
           isVisRunning = false;
+          setStreamState("PAUSED");
           print("Signal paused.", "c-dim");
         }
         updateStatus();
@@ -824,6 +834,7 @@
       appState = STATEPLAY;
       currentStation = st;
       playbackActive = true;
+      setStreamState("CONNECTING");
       setLastStationId(st.id);
       updatePathDisplay();
       refreshStationHighlight();
@@ -852,6 +863,7 @@
       audioPlayer.play().then(()=>{
          print(`Connection established.`, "c-dim");
          playbackStartedAt = Date.now();
+         setStreamState("ONLINE");
          
          // Start visualizer
          isVisRunning = true;
@@ -864,9 +876,10 @@
          print(`Retrying with alternate freq...`, "c-dim");
          audioPlayer.src = `https://ice2.somafm.com/${st.id}-128-mp3`;
          currentStreamInfo = parseStreamInfo(audioPlayer.src);
-         updateTelemetry();
+         setStreamState("CONNECTING");
          audioPlayer.play().then(() => {
             playbackStartedAt = Date.now();
+            setStreamState("ONLINE");
             isVisRunning = true;
             drawVisualizer();
             startPolling(st.id);
@@ -884,6 +897,7 @@
       playbackActive = false;
       playbackStartedAt = null;
       currentStreamInfo = "";
+      streamState = "OFFLINE";
       audioPlayer.pause();
       audioPlayer.src = "";
       if(hls) { hls.destroy(); hls=null; }
@@ -958,6 +972,22 @@
         e.preventDefault();
         uiExec("home");
       }
+    });
+
+    audioPlayer.addEventListener("waiting", () => {
+      if(hasActivePlayback() && !audioPlayer.paused) setStreamState("BUFFERING");
+    });
+    audioPlayer.addEventListener("stalled", () => {
+      if(hasActivePlayback() && !audioPlayer.paused) setStreamState("BUFFERING");
+    });
+    audioPlayer.addEventListener("playing", () => {
+      if(hasActivePlayback()) setStreamState("ONLINE");
+    });
+    audioPlayer.addEventListener("pause", () => {
+      if(hasActivePlayback()) setStreamState("PAUSED");
+    });
+    audioPlayer.addEventListener("error", () => {
+      if(hasActivePlayback()) setStreamState("OFFLINE");
     });
 
     document.addEventListener("keydown", (e) => {
