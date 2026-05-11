@@ -4,7 +4,9 @@
 
 SomaFM Core is a lightweight single-file web radio player for SomaFM stations, built as a terminal-style interface. It runs directly in the browser and needs no server, build step, database, or account.
 
-Live version: [domrique.github.io/somafm-core](https://domrique.github.io/somafm-core/)
+**🔊 Live demo: [https://domrique.github.io/somafm-core/](https://domrique.github.io/somafm-core/)**
+
+Language: **English** / [Русский](README.ru.md)
 
 ![SomaFM Core screenshot](assets/screenshot-main.png)
 
@@ -15,13 +17,9 @@ Live version: [domrique.github.io/somafm-core](https://domrique.github.io/somafm
 - AAC / HLS playback support.
 - Live Web Audio visualizer in the status bar.
 - Now-playing metadata polling with clickable track copy.
-- Bottom control bar with play/pause, volume, random station, help, and home.
-- Volume popup with mute / unmute.
 - Last station restore via `last` / `resume`.
 - Random station playback via `random` / `rnd`.
-- Current station highlighting in the station list.
-- Mobile-friendly controls: tapping bottom buttons does not force the keyboard open.
-- `favicon.ico` included for browser tabs and installed shortcuts.
+- Keyboard and command-line playback controls.
 
 ## Run
 
@@ -59,6 +57,7 @@ You can use the bottom bar, click a station, or type commands into the terminal 
 
 - `index.html` - the whole application.
 - `favicon.ico` - browser tab / shortcut icon.
+- `assets/screenshot-main.png` - README screenshot.
 - `README.md` - English documentation.
 - `README.ru.md` - Russian documentation.
 

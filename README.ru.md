@@ -4,7 +4,9 @@
 
 SomaFM Core - легкий веб-плеер для радиостанций SomaFM в стиле терминала. Работает прямо в браузере: без сервера, сборки, базы данных и регистрации.
 
-Live-версия: [domrique.github.io/somafm-core](https://domrique.github.io/somafm-core/)
+**🔊 Live-версия: [https://domrique.github.io/somafm-core/](https://domrique.github.io/somafm-core/)**
+
+Язык: [English](README.md) / **Русский**
 
 ![Скриншот SomaFM Core](assets/screenshot-main.png)
 
@@ -16,13 +18,9 @@ Live-версия: [domrique.github.io/somafm-core](https://domrique.github.io/s
 - Поддержка AAC / HLS потоков.
 - Live-визуализатор звука в статус-баре.
 - Получение now playing и копирование трека по клику.
-- Нижняя панель управления: play/pause, volume, random, help, home.
-- Меню громкости с mute / unmute.
 - Продолжение последней станции через `last` / `resume`.
 - Случайная станция через `random` / `rnd`.
-- Подсветка текущей станции в списке.
-- На мобильных кнопки управления не открывают клавиатуру.
-- `favicon.ico` для вкладки браузера и ярлыков.
+- Управление через клавиатуру и терминальные команды.
 
 ## Запуск
 
@@ -60,6 +58,7 @@ GitHub Pages обычно обновляется автоматически по
 
 - `index.html` - все приложение.
 - `favicon.ico` - иконка вкладки / ярлыка.
+- `assets/screenshot-main.png` - скриншот для README.
 - `README.md` - документация на английском.
 - `README.ru.md` - документация на русском.
 
