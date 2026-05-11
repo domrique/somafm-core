@@ -46,15 +46,11 @@
     @media (min-width: 801px) {
       body {
         max-width: var(--term-max-width);
-        margin: 0;
+        margin: 0 auto;
+        border-left: 1px solid #333;
         border-right: 1px solid #333;
-        box-shadow: 10px 0 40px rgba(0,0,0,0.5);
+        box-shadow: 0 0 40px rgba(0,0,0,0.55);
         position: relative;
-      }
-      #status-bar, #input-line {
-        max-width: var(--term-max-width);
-        left: 0;
-        width: 100%;
       }
     }
 
@@ -219,6 +215,15 @@
     @media (max-width:600px){
       body{ font-size:15px; }
       .s-btn{ padding:10px 5px; font-size:12px; }
+    }
+
+    @media (min-width: 801px) {
+      #status-bar, #input-line {
+        left: 50%;
+        width: var(--term-max-width);
+        max-width: var(--term-max-width);
+        transform: translateX(-50%);
+      }
     }
   </style>
 </head>
