@@ -178,8 +178,12 @@
       transition:all 0.1s; text-align:center; white-space:nowrap;
       font-weight:bold; font-size:13px; border:1px solid rgba(255,255,255,0.1);
       flex:1; margin:0 4px; max-width:100px;
+      background:transparent; color:inherit; font-family:inherit;
+      display:flex; align-items:center; justify-content:center; gap:6px;
     }
+    .s-btn:focus-visible{ outline:1px solid rgba(255,255,255,0.8); outline-offset:2px; }
     .s-btn:active{ background-color:rgba(255,255,255,0.3); transform:translateY(1px); }
+    .s-btn-icon{ font-size:14px; line-height:1; opacity:0.9; }
 
     #vol-popup {
       position:absolute; bottom:calc(55px + env(safe-area-inset-bottom));
@@ -282,6 +286,7 @@
     
     let stations = [];
     let currentStation = null;
+    let playbackActive = false;
     let hls = null;
     let nowPlayingTimer = null;
     let lastNowPlayingText = "";
@@ -340,6 +345,15 @@
       } else {
         pathDisplay.innerText = "~";
       }
+    }
+
+    function hasActivePlayback(){
+      return playbackActive && currentStation;
+    }
+
+    function controlButton(cmd, icon, label, extraAttr=""){
+      const iconHtml = icon ? `<span class="s-btn-icon">${icon}</span>` : "";
+      return `<button type="button" class="s-btn" onclick="${cmd}" ${extraAttr}>${iconHtml}<span>${label}</span></button>`;
     }
 
     // --- VISUALIZER LOGIC ---
@@ -405,15 +419,25 @@
 
     // --- STATUS BAR ---
     function updateStatus(){
-      let btns = `<div class="s-btn" onclick="uiExec('cls')">CLS</div>`;
+      let btns = "";
       
-      if (appState === STATEPLAY) {
-        btns += `<div class="s-btn" onclick="uiExec('space')">PAUSE</div>`;
-        btns += `<div class="s-btn" onclick="toggleVolume(event)">VOL</div>`;
-        btns += `<div class="s-btn" onclick="uiExec('home')">HOME</div>`;
+      if (hasActivePlayback()) {
+        const playLabel = audioPlayer.paused ? "PLAY" : "PAUSE";
+        const playIcon = audioPlayer.paused ? ">" : "II";
+        btns += controlButton("uiExec('space')", playIcon, playLabel, `aria-label="${playLabel}"`);
+        btns += controlButton("toggleVolume(event)", "", "VOL", `aria-label="Volume"`);
+        if(appState !== STATELIST) {
+          btns += controlButton("uiExec('home')", "~", "HOME", `aria-label="Home"`);
+        }
         
         infoLabel.innerText = currentStation ? currentStation.name.toUpperCase() : "NOW PLAYING";
-        infoTrack.innerText = lastNowPlayingText || "Fetching metadata...";
+        if(appState === STATELIST && audioPlayer.paused){
+          infoTrack.innerText = lastNowPlayingText || "Paused. Select another frequency.";
+        } else if(appState === STATELIST){
+          infoTrack.innerText = lastNowPlayingText || "Playing in background.";
+        } else {
+          infoTrack.innerText = lastNowPlayingText || "Fetching metadata...";
+        }
         infoTrack.dataset.track = lastNowPlayingText;
         
         // Ensure canvas exists
@@ -506,21 +530,36 @@
       if (cmd === "cls") { outputDiv.innerHTML = ""; return; }
       
       if (cmd === "home" || cmd === "back" || cmd === "esc") {
-        stopPlayback();
+        if(appState === STATELIST) {
+          updateStatus();
+          return;
+        }
         renderList();
         return;
       }
       
+      if (cmd === "stop") {
+        if(!hasActivePlayback()) return;
+        stopPlayback();
+        updateStatus();
+        print("Signal stopped.", "c-dim");
+        return;
+      }
+      
       if (cmd === "space" || cmd === "pause") {
-        if(appState !== STATEPLAY) return;
+        if(!hasActivePlayback()) return;
         if(audioPlayer.paused) {
           audioPlayer.play();
           if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+          isVisRunning = true;
+          drawVisualizer();
           print("Signal resumed.", "c-dim");
         } else {
           audioPlayer.pause();
+          isVisRunning = false;
           print("Signal paused.", "c-dim");
         }
+        updateStatus();
         return;
       }
 
@@ -558,7 +597,6 @@
 
     function renderList(){
       appState = STATELIST;
-      currentStation = null;
       updatePathDisplay();
       
       print(`<span class="c-path">frequencies@somafm</span>: listing available uplinks...`, "c-path");
@@ -577,7 +615,7 @@
       const st = stations[idx];
       if(!st) return;
 
-      if(appState === STATEPLAY) stopPlayback();
+      if(hasActivePlayback()) stopPlayback({ keepStatus: true });
       
       // Init Audio Context on user action
       if(!audioCtx) initAudioContext();
@@ -587,6 +625,7 @@
 
       appState = STATEPLAY;
       currentStation = st;
+      playbackActive = true;
       updatePathDisplay();
       updateStatus();
 
@@ -616,6 +655,7 @@
          drawVisualizer();
          
          startPolling(st.id);
+         updateStatus();
       }).catch(e=>{
          print(`Connection failed: ${e.message}`, "c-err");
          print(`Retrying with alternate freq...`, "c-dim");
@@ -623,12 +663,19 @@
          audioPlayer.play().then(() => {
             isVisRunning = true;
             drawVisualizer();
-         }).catch(err => print("Backup failed.", "c-err"));
+            startPolling(st.id);
+            updateStatus();
+         }).catch(err => {
+            stopPlayback();
+            print("Backup failed.", "c-err");
+            updateStatus();
+         });
       });
     }
 
-    function stopPlayback(){
+    function stopPlayback(opts={}){
       isVisRunning = false;
+      playbackActive = false;
       audioPlayer.pause();
       audioPlayer.src = "";
       if(hls) { hls.destroy(); hls=null; }
@@ -636,6 +683,11 @@
       
       lastTrackPrinted = "";
       lastNowPlayingText = "";
+      if(!opts.keepStatus) {
+        currentStation = null;
+        if(appState === STATEPLAY) appState = STATELIST;
+        updatePathDisplay();
+      }
     }
 
     // --- POLLING ---
@@ -685,11 +737,18 @@
 
     inputField.addEventListener("keydown", (e) => {
       if(e.key === "Enter") execInput();
+      else if(e.key === " " && hasActivePlayback()) {
+        e.preventDefault();
+        uiExec("space");
+      } else if(e.key === "Escape") {
+        e.preventDefault();
+        uiExec("home");
+      }
     });
 
     document.addEventListener("keydown", (e) => {
       if(e.target === inputField) return;
-      if(e.key === " " && appState === STATEPLAY) { e.preventDefault(); uiExec("space"); }
+      if(e.key === " " && hasActivePlayback()) { e.preventDefault(); uiExec("space"); }
       else if(e.key === "Escape"){ uiExec("home"); }
       else if(e.key.length === 1 && !e.ctrlKey && !e.altKey){ inputField.focus(); }
     });
