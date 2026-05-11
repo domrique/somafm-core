@@ -21,7 +21,7 @@
       --vis-color: #4ec9b0;
       --track-bg: #d7005f;
       --track-fg: #ffffff;
-      --status-h: 90px;
+      --status-h: 112px;
       --term-max-width: 800px;
     }
     
@@ -166,6 +166,15 @@
     #info-track { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:bold; font-size:14px; }
     #info-meta { text-align:right; font-size:12px; min-width:64px; display:flex; align-items:center; justify-content:flex-end; }
 
+    #status-telemetry-row {
+      height:22px; display:flex; align-items:center;
+      padding:0 12px; background:rgba(0,0,0,0.24);
+      border-bottom:1px solid rgba(255,255,255,0.1);
+      font-size:11px; font-weight:bold; letter-spacing:0.5px;
+      color:rgba(255,255,255,0.86); white-space:nowrap; overflow:hidden;
+    }
+    #status-telemetry-row span { overflow:hidden; text-overflow:ellipsis; }
+
     /* --- NEW PIXEL VISUALIZER STYLE --- */
     #vis-canvas {
       width: 64px;
@@ -258,6 +267,10 @@
       </div>
     </div>
 
+    <div id="status-telemetry-row">
+      <span id="status-telemetry">NO STREAM | VOL 80</span>
+    </div>
+
     <div id="status-controls-row">
       <!-- Buttons injected by JS -->
     </div>
@@ -311,6 +324,8 @@
     let stations = [];
     let currentStation = null;
     let playbackActive = false;
+    let playbackStartedAt = null;
+    let currentStreamInfo = "";
     let hls = null;
     let nowPlayingTimer = null;
     let lastNowPlayingText = "";
@@ -334,6 +349,7 @@
     const infoLabel = document.getElementById("info-label");
     const metaVis = document.getElementById("info-meta");
     const controlsRow = document.getElementById("status-controls-row");
+    const telemetryText = document.getElementById("status-telemetry");
     const volPopup = document.getElementById("vol-popup");
     const volSlider = document.getElementById("vol-slider");
     const volVal = document.getElementById("vol-val");
@@ -413,6 +429,33 @@
     function controlButton(cmd, icon, label, extraAttr=""){
       const iconHtml = icon ? `<span class="s-btn-icon">${icon}</span>` : "";
       return `<button type="button" class="s-btn" onclick="${cmd}" ${extraAttr}>${iconHtml}<span>${label}</span></button>`;
+    }
+
+    function parseStreamInfo(url){
+      const lower = (url || "").toLowerCase();
+      if(lower.includes(".m3u8")) return "HLS";
+      const m = lower.match(/-(\d+)-(aac|mp3)/);
+      if(m) return `${m[2].toUpperCase()}${m[1]}`;
+      if(lower.includes("aac")) return "AAC";
+      if(lower.includes("mp3")) return "MP3";
+      return "STREAM";
+    }
+
+    function formatUptime(){
+      if(!playbackStartedAt) return "00:00";
+      const total = Math.max(0, Math.floor((Date.now() - playbackStartedAt) / 1000));
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      if(h > 0) return `${h}:${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`;
+      return `${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`;
+    }
+
+    function updateTelemetry(){
+      const volumeText = isMuted ? "MUTE" : `VOL ${Math.round(volume * 100)}`;
+      const streamText = hasActivePlayback() ? currentStreamInfo || "STREAM" : "NO STREAM";
+      const upText = hasActivePlayback() ? `UP ${formatUptime()}` : "UP --:--";
+      telemetryText.innerText = `${streamText} | ${upText} | ${volumeText}`;
     }
 
     // --- VISUALIZER LOGIC ---
@@ -520,6 +563,7 @@
         }
       }
       controlsRow.innerHTML = btns;
+      updateTelemetry();
     }
 
     // --- VOLUME ---
@@ -540,6 +584,7 @@
       isMuted = nextMuted;
       audioPlayer.muted = isMuted;
       updateVolumeUi();
+      updateTelemetry();
       if(shouldPrint) print(isMuted ? "Signal muted." : "Signal unmuted.", "c-dim");
     }
 
@@ -557,6 +602,7 @@
       audioPlayer.volume = volume;
       audioPlayer.muted = isMuted;
       updateVolumeUi();
+      updateTelemetry();
     });
     document.addEventListener("click", (e)=>{
       if(!e.target.closest("#vol-popup") && !e.target.closest(".s-btn")) volPopup.classList.remove("show");
@@ -791,6 +837,8 @@
       if(url.endsWith(".pls") || url.endsWith(".m3u")) {
          url = `https://ice2.somafm.com/${st.id}-128-aac`;
       }
+      currentStreamInfo = parseStreamInfo(url);
+      updateTelemetry();
 
       if(url.includes(".m3u8") && Hls.isSupported()){
         hls = new Hls();
@@ -803,6 +851,7 @@
       
       audioPlayer.play().then(()=>{
          print(`Connection established.`, "c-dim");
+         playbackStartedAt = Date.now();
          
          // Start visualizer
          isVisRunning = true;
@@ -814,7 +863,10 @@
          print(`Connection failed: ${e.message}`, "c-err");
          print(`Retrying with alternate freq...`, "c-dim");
          audioPlayer.src = `https://ice2.somafm.com/${st.id}-128-mp3`;
+         currentStreamInfo = parseStreamInfo(audioPlayer.src);
+         updateTelemetry();
          audioPlayer.play().then(() => {
+            playbackStartedAt = Date.now();
             isVisRunning = true;
             drawVisualizer();
             startPolling(st.id);
@@ -830,6 +882,8 @@
     function stopPlayback(opts={}){
       isVisRunning = false;
       playbackActive = false;
+      playbackStartedAt = null;
+      currentStreamInfo = "";
       audioPlayer.pause();
       audioPlayer.src = "";
       if(hls) { hls.destroy(); hls=null; }
@@ -843,6 +897,7 @@
         if(appState === STATEPLAY) appState = STATELIST;
         updatePathDisplay();
       }
+      updateTelemetry();
     }
 
     // --- POLLING ---
@@ -883,6 +938,8 @@
       renderList();
       printLastStationHint();
       updateVolumeUi();
+      updateTelemetry();
+      setInterval(updateTelemetry, 1000);
       focusCommandInput();
     };
 
