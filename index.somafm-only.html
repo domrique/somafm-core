@@ -363,6 +363,7 @@
     let icyMetadataToken = 0;
     let lastNowPlayingText = "";
     let lastTrackPrinted = "";
+    let autoScrollOutput = true;
 
     // --- AUDIO VISUALIZER STATE ---
     let audioCtx, analyser, sourceNode;
@@ -393,6 +394,11 @@
       terminalDiv.scrollTop = terminalDiv.scrollHeight; 
     }
 
+    function scrollToTop(){
+      terminalDiv.scrollTop = 0;
+      window.scrollTo(0, 0);
+    }
+
     function printPromptLog(cmd){
       const path = appState === STATEPLAY && currentStation 
         ? `~/${currentStation.id}` 
@@ -406,7 +412,7 @@
       div.className = `line ${cssClass}`.trim();
       div.innerHTML = html;
       outputDiv.appendChild(div);
-      scrollToBottom();
+      if(autoScrollOutput) scrollToBottom();
     }
 
     function escapeHtml(s){
@@ -1266,6 +1272,8 @@
 
     // --- INIT ---
     window.onload = async () => {
+      if("scrollRestoration" in history) history.scrollRestoration = "manual";
+      autoScrollOutput = false;
       stations = await loadStations();
       print(`Loaded ${stations.length} channels.`);
       renderList();
@@ -1273,6 +1281,10 @@
       updateVolumeUi();
       updateTelemetry();
       setInterval(updateTelemetry, 1000);
+      requestAnimationFrame(() => {
+        scrollToTop();
+        autoScrollOutput = true;
+      });
       focusCommandInput();
     };
 
