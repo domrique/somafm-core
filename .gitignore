@@ -11,3 +11,4 @@ android/capacitor-cordova-android-plugins/build/
 
 *.apk
 *.aab
+!releases/*.apk

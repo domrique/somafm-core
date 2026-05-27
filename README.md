@@ -37,6 +37,10 @@ Open `index.html` in any modern browser.
 
 The web app and APK use the same source file: `index.html`.
 
+Download the latest APK:
+
+[SomaFMCore-player-release.apk](https://github.com/domrique/somafm-core/releases/latest/download/SomaFMCore-player-release.apk)
+
 To build the release APK in this workspace:
 
 ```powershell

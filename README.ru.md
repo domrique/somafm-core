@@ -37,6 +37,10 @@ SomaFM Core - терминальный веб-плеер для SomaFM и неб
 
 Web-версия и APK используют один источник: `index.html`.
 
+Скачать последний APK:
+
+[SomaFMCore-player-release.apk](https://github.com/domrique/somafm-core/releases/latest/download/SomaFMCore-player-release.apk)
+
 Собрать release APK в этой рабочей папке:
 
 ```powershell
