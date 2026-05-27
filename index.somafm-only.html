@@ -116,6 +116,18 @@
 
     .clickable{ cursor:pointer; }
     .clickable:hover{ background-color:#333; color:#fff; text-decoration:underline; }
+    .tv-focus {
+      outline: 2px solid var(--cmd-color);
+      outline-offset: 2px;
+      background-color: rgba(252, 233, 79, 0.16);
+      color: #fff;
+      text-decoration: none;
+    }
+    .station-current.tv-focus {
+      outline-color: #fff;
+      background-color: var(--cmd-color);
+      color: #111;
+    }
     .station-current,
     .station-current:hover,
     .station-current:focus,
@@ -364,6 +376,7 @@
     let lastNowPlayingText = "";
     let lastTrackPrinted = "";
     let autoScrollOutput = true;
+    let tvFocusIndex = -1;
 
     // --- AUDIO VISUALIZER STATE ---
     let audioCtx, analyser, sourceNode;
@@ -468,6 +481,45 @@
     function controlButton(cmd, icon, label, extraAttr=""){
       const iconHtml = icon ? `<span class="s-btn-icon">${icon}</span>` : "";
       return `<button type="button" class="s-btn" onclick="${cmd}" ${extraAttr}>${iconHtml}<span>${label}</span></button>`;
+    }
+
+    function getTvFocusables(){
+      return Array.from(document.querySelectorAll(".station-item.clickable, .track-highlight.clickable, #info-track-container.clickable, #status-controls-row .s-btn"))
+        .filter(el => {
+          const rect = el.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        });
+    }
+
+    function setTvFocus(nextIndex){
+      const items = getTvFocusables();
+      document.querySelectorAll(".tv-focus").forEach(el => el.classList.remove("tv-focus"));
+      if(!items.length) {
+        tvFocusIndex = -1;
+        return null;
+      }
+      tvFocusIndex = ((nextIndex % items.length) + items.length) % items.length;
+      const el = items[tvFocusIndex];
+      el.classList.add("tv-focus");
+      el.scrollIntoView({ block:"nearest", inline:"nearest" });
+      return el;
+    }
+
+    function moveTvFocus(delta){
+      const items = getTvFocusables();
+      if(!items.length) return;
+      if(tvFocusIndex < 0) {
+        const activeIndex = items.findIndex(el => el.classList.contains("station-current"));
+        setTvFocus(activeIndex >= 0 ? activeIndex : 0);
+        return;
+      }
+      setTvFocus(tvFocusIndex + delta);
+    }
+
+    function activateTvFocus(){
+      const items = getTvFocusables();
+      const el = items[tvFocusIndex] || setTvFocus(0);
+      if(el) el.click();
     }
 
     function parseStreamInfo(url){
@@ -889,6 +941,11 @@
       }
       refreshStationHighlight();
       updateStatus();
+      requestAnimationFrame(() => {
+        const items = getTvFocusables();
+        const activeIndex = items.findIndex(el => el.classList.contains("station-current"));
+        if(activeIndex >= 0) setTvFocus(activeIndex);
+      });
     }
 
     function printLastStationHint(){
@@ -1335,10 +1392,30 @@
 
     document.addEventListener("keydown", (e) => {
       if(e.target === inputField) return;
-      if(e.key === " " && hasActivePlayback()) { e.preventDefault(); uiExec("space"); }
-      else if(e.key === "Escape"){ uiExec("home"); }
+      if(e.key === "ArrowDown" || e.key === "ArrowRight") {
+        e.preventDefault();
+        moveTvFocus(1);
+      } else if(e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        moveTvFocus(-1);
+      } else if(e.key === "Enter") {
+        e.preventDefault();
+        activateTvFocus();
+      } else if((e.key === " " || e.key === "MediaPlayPause") && hasActivePlayback()) {
+        e.preventDefault();
+        uiExec("space");
+      } else if(e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack"){
+        e.preventDefault();
+        uiExec("home");
+      }
       else if(e.key.length === 1 && !e.ctrlKey && !e.altKey){ focusCommandInput(); }
     });
+
+    if(window.Capacitor?.Plugins?.App){
+      window.Capacitor.Plugins.App.addListener("backButton", () => {
+        if(appState !== STATELIST) uiExec("home");
+      });
+    }
     
     document.addEventListener("click", (e)=>{
       if(!e.target.closest("#status-bar") && !e.target.closest(".clickable")) focusCommandInput();

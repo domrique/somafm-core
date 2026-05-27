@@ -1,0 +1,25 @@
+{
+  "name": "somafm-core",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Terminal-style SomaFM and curated radio player.",
+  "scripts": {
+    "web:stage": "node scripts/prepare-capacitor.js",
+    "build:web": "npm run web:stage",
+    "verify:shared": "node scripts/verify-shared-web.js",
+    "package:release": "powershell -ExecutionPolicy Bypass -File scripts/package-release.ps1",
+    "android:add": "npm run web:stage && npx cap add android",
+    "android:sync": "npm run web:stage && npx cap sync android && npm run verify:shared",
+    "android:debug": "powershell -ExecutionPolicy Bypass -File scripts/build-android-debug.ps1",
+    "android:release": "powershell -ExecutionPolicy Bypass -File scripts/build-android-release.ps1",
+    "android:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/core": "^8.3.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.4"
+  }
+}

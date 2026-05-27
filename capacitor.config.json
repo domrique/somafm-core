@@ -1,0 +1,15 @@
+{
+  "appId": "io.github.domrique.somafmcore.player",
+  "appName": "SomaFMCore",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "backgroundColor": "#121212"
+    }
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true
+  }
+}
