@@ -1,26 +1,42 @@
 # Android / Google TV Build
 
-This project is wrapped as an Android / Google TV app with Capacitor.
+This project is packaged as an Android / Google TV launcher APK with Capacitor.
 
-## One Web Payload
+## One Web App
 
-The browser version and APK use the same source file:
+The browser version is the source of truth:
 
 ```text
 index.html
+manifest.webmanifest
+sw.js
 ```
 
 Do not edit generated copies directly:
 
 - `www/index.html`
+- `www/manifest.webmanifest`
+- `www/sw.js`
 - `android/app/src/main/assets/public/index.html`
+- `android/app/src/main/assets/public/manifest.webmanifest`
+- `android/app/src/main/assets/public/sw.js`
 
-They are rebuilt from the root `index.html` by `npm run android:sync`.
+They are rebuilt from the root files by `npm run android:sync`.
+
+The APK launcher opens the live PWA URL:
+
+```text
+https://domrique.github.io/somafm-core/
+```
+
+This avoids Android WebView background-audio sleep issues by letting the system
+browser engine handle playback.
 
 ## What is included
 
 - Android project in `android/`.
 - Capacitor web asset export to `www/`.
+- PWA manifest and service worker for browser install.
 - Android TV launcher category and TV banner.
 - D-pad basics in the web UI:
   - Arrow keys / D-pad: move focus
@@ -81,12 +97,14 @@ This creates:
 
 ```text
 dist/web/index.html
+dist/web/manifest.webmanifest
+dist/web/sw.js
 dist/web/favicon.ico
 dist/android/SomaFMCore-player-release.apk
 ```
 
-The package script also verifies that the Android HTML payload is identical to
-the root `index.html`.
+The package script also verifies that the staged browser and Android web payloads
+are identical.
 
 ## Manual sync
 

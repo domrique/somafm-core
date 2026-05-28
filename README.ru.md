@@ -2,7 +2,7 @@
 
 > Poor Man's Radio for Everyone.
 
-SomaFM Core - терминальный веб-плеер для SomaFM и небольшого набора отобранных независимых внешних станций. Работает как обычная страница в браузере и может собираться в Android / Google TV APK из того же `index.html`.
+SomaFM Core - терминальный веб-плеер для SomaFM и небольшого набора отобранных независимых внешних станций. Работает как обычная страница в браузере, устанавливаемая PWA и Android / Google TV launcher APK.
 
 **🔊 Live: [https://domrique.github.io/somafm-core/](https://domrique.github.io/somafm-core/)**
 
@@ -19,7 +19,7 @@ SomaFM Core - терминальный веб-плеер для SomaFM и неб
 - Now playing для SomaFM и внешних ICY-потоков, где метаданные доступны.
 - Продолжение последней станции через `last` / `resume`.
 - Случайная станция через `random` / `rnd`.
-- Android / Google TV сборка с управлением под D-pad / пульт.
+- Android / Google TV launcher APK с управлением под D-pad / пульт.
 
 ## Запуск
 
@@ -35,7 +35,11 @@ SomaFM Core - терминальный веб-плеер для SomaFM и неб
 
 ### Android APK
 
-Web-версия и APK используют один источник: `index.html`.
+APK открывает live PWA:
+
+[https://domrique.github.io/somafm-core/](https://domrique.github.io/somafm-core/)
+
+Так Android-версия остаётся идентичной веб-версии и использует обычный браузерный аудиостек, который лучше переживает воспроизведение в фоне.
 
 Скачать последний APK:
 
@@ -52,6 +56,8 @@ npm run package:release
 
 ```text
 dist/web/index.html
+dist/web/manifest.webmanifest
+dist/web/sw.js
 dist/android/SomaFMCore-player-release.apk
 ```
 
@@ -78,6 +84,7 @@ dist/android/SomaFMCore-player-release.apk
 
 - `index.html` - исходник приложения для браузера и APK.
 - `index.somafm-only.html` - резервная версия без external radio.
+- `manifest.webmanifest` / `sw.js` - PWA-метаданные и лёгкий cache worker.
 - `assets/screenshot-main.png` - скриншот для README.
 - `android/` - Android-проект Capacitor.
 - `scripts/` - сборка, упаковка и генерация Android-иконок.

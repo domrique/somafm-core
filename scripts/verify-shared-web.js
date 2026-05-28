@@ -9,6 +9,10 @@ const pairs = [
   ["index.html", "android/app/src/main/assets/public/index.html"],
   ["favicon.ico", "www/favicon.ico"],
   ["favicon.ico", "android/app/src/main/assets/public/favicon.ico"],
+  ["manifest.webmanifest", "www/manifest.webmanifest"],
+  ["manifest.webmanifest", "android/app/src/main/assets/public/manifest.webmanifest"],
+  ["sw.js", "www/sw.js"],
+  ["sw.js", "android/app/src/main/assets/public/sw.js"],
 ];
 
 function hash(file) {

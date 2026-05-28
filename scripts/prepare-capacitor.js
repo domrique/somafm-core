@@ -24,6 +24,8 @@ fs.mkdirSync(outDir, { recursive: true });
 
 copyFile(path.join(root, "index.html"), path.join(outDir, "index.html"));
 copyFile(path.join(root, "favicon.ico"), path.join(outDir, "favicon.ico"));
+copyFile(path.join(root, "manifest.webmanifest"), path.join(outDir, "manifest.webmanifest"));
+copyFile(path.join(root, "sw.js"), path.join(outDir, "sw.js"));
 copyDir(path.join(root, "assets"), path.join(outDir, "assets"));
 
 console.log("Prepared Capacitor web assets in www/");

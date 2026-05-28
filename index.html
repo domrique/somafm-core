@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#007acc" />
   <title>SomaFMcore: System Ready. Music On.</title>
   <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/pwa-icon-192.png">
   <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js"></script>
 
@@ -393,6 +396,9 @@
     let userPausedPlayback = false;
     let suppressPauseRecovery = false;
     let reconnectInFlight = false;
+    let reconnectTimer = null;
+    let reconnectAttempts = 0;
+    let lastReconnectMessageAt = 0;
     let debugMode = false;
     let hls = null;
     let nowPlayingTimer = null;
@@ -402,8 +408,6 @@
     let lastNowPlayingText = "";
     let lastTrackPrinted = "";
     let pauseRecoveryTimer = null;
-    let lastSignalHoldMessageAt = 0;
-    let lastSignalHoldReason = "";
     let autoScrollOutput = true;
     let tvFocusIndex = -1;
 
@@ -577,6 +581,13 @@
       if(!url) return "";
       const sep = url.includes("?") ? "&" : "?";
       return `${url}${sep}_=${Date.now()}`;
+    }
+
+    function getReconnectUrl(){
+      if(!currentStreamUrl) return "";
+      if(currentStation && currentStation.source === "external") return currentStreamUrl;
+      if(currentStreamUrl.includes(".m3u8")) return currentStreamUrl;
+      return cacheBustUrl(currentStreamUrl);
     }
 
     function getMp3BackupUrl(st){
@@ -1035,6 +1046,9 @@
       currentStation = st;
       playbackActive = true;
       userPausedPlayback = false;
+      reconnectAttempts = 0;
+      lastReconnectMessageAt = 0;
+      clearReconnectTimer();
       setStreamState("CONNECTING");
       setLastStationId(st.id);
       updatePathDisplay();
@@ -1086,6 +1100,12 @@
          print(`Connection failed: ${e.message}`, "c-err");
          print(`Retrying with alternate freq...`, "c-dim");
          const backupUrl = getMp3BackupUrl(st);
+         if(!backupUrl) {
+            reconnectAttempts += 1;
+            scheduleReconnect(`connection failed`, 1200);
+            updateStatus();
+            return;
+         }
          currentStreamUrl = backupUrl;
          audioPlayer.src = backupUrl;
          currentStreamInfo = parseStreamInfo(backupUrl);
@@ -1112,6 +1132,7 @@
 
     function stopPlayback(opts={}){
       clearPauseRecoveryTimer();
+      clearReconnectTimer();
       isVisRunning = false;
       playbackActive = false;
       userPausedPlayback = false;
@@ -1149,6 +1170,13 @@
       }
     }
 
+    function clearReconnectTimer(){
+      if(reconnectTimer){
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
+    }
+
     function scheduleUnexpectedPauseRecovery(reason){
       if(!hasActivePlayback() || userPausedPlayback || suppressPauseRecovery) return;
       clearPauseRecoveryTimer();
@@ -1160,22 +1188,36 @@
       }, 1600);
     }
 
-    function printSignalHold(reason){
+    function printReconnectNotice(reason){
       const now = Date.now();
-      if(reason === lastSignalHoldReason && now - lastSignalHoldMessageAt < 15000) return;
-      lastSignalHoldReason = reason;
-      lastSignalHoldMessageAt = now;
-      print(`Signal hold: ${reason}. Tap PLAY to resume.`, "c-dim");
+      if(now - lastReconnectMessageAt < 30000) return;
+      lastReconnectMessageAt = now;
+      print(`Signal retry: ${reason}. Reopening stream...`, "c-dim");
+    }
+
+    function scheduleReconnect(reason, delay){
+      if(!hasActivePlayback() || userPausedPlayback) return;
+      if(reconnectTimer || reconnectInFlight) return;
+      const wait = typeof delay === "number"
+        ? delay
+        : Math.min(10000, 1200 + reconnectAttempts * 1800);
+      setStreamState("BUFFERING");
+      printReconnectNotice(reason);
+      reconnectTimer = setTimeout(() => {
+        reconnectTimer = null;
+        reconnectCurrentStream(reason);
+      }, wait);
     }
 
     function reconnectCurrentStream(reason){
-      if(!hasActivePlayback() || !currentStreamUrl || reconnectInFlight) return;
+      if(!hasActivePlayback() || !currentStreamUrl || reconnectInFlight || userPausedPlayback) return;
       clearPauseRecoveryTimer();
+      clearReconnectTimer();
       reconnectInFlight = true;
       setStreamState("CONNECTING");
       logAudioDebug(`reconnect:${reason}`);
 
-      const reconnectUrl = cacheBustUrl(currentStreamUrl);
+      const reconnectUrl = getReconnectUrl();
       suppressPauseRecovery = true;
       audioPlayer.pause();
 
@@ -1185,6 +1227,7 @@
         hls.loadSource(reconnectUrl);
         hls.attachMedia(audioPlayer);
       } else {
+        audioPlayer.removeAttribute("src");
         audioPlayer.src = reconnectUrl;
       }
 
@@ -1195,6 +1238,7 @@
 
       audioPlayer.play().then(()=>{
         reconnectInFlight = false;
+        reconnectAttempts = 0;
         if(!playbackStartedAt) playbackStartedAt = Date.now();
         isVisRunning = true;
         drawVisualizer();
@@ -1203,25 +1247,34 @@
         reconnectInFlight = false;
         if(!hasActivePlayback()) return;
         if(!audioPlayer.paused){
+          reconnectAttempts = 0;
           setStreamState("ONLINE");
           updateStatus();
           return;
         }
-        setStreamState("PAUSED");
+        reconnectAttempts += 1;
+        setStreamState("BUFFERING");
         isVisRunning = false;
-        printSignalHold(reason);
+        scheduleReconnect(reason);
         updateStatus();
       });
     }
 
     function recoverStreamError(){
-      if(!hasActivePlayback() || reconnectInFlight) return;
+      if(!hasActivePlayback()) return;
+      clearPauseRecoveryTimer();
       const code = audioPlayer.error ? audioPlayer.error.code : 0;
       const backupUrl = getMp3BackupUrl(currentStation);
       const canUseMp3Backup = code === 3 && backupUrl && currentStreamUrl !== backupUrl;
 
+      if(reconnectInFlight) {
+        scheduleReconnect(`media error ${code || ""}`.trim());
+        return;
+      }
+
       if(!canUseMp3Backup) {
-        reconnectCurrentStream(`media error ${code || ""}`.trim());
+        reconnectAttempts += 1;
+        scheduleReconnect(`media error ${code || ""}`.trim(), 800);
         return;
       }
 
@@ -1448,6 +1501,9 @@
     audioPlayer.addEventListener("playing", () => {
       logAudioDebug("playing");
       clearPauseRecoveryTimer();
+      clearReconnectTimer();
+      reconnectInFlight = false;
+      reconnectAttempts = 0;
       if(hasActivePlayback()) setStreamState("ONLINE");
     });
     audioPlayer.addEventListener("pause", () => {
@@ -1496,6 +1552,10 @@
     document.addEventListener("click", (e)=>{
       if(!e.target.closest("#status-bar") && !e.target.closest(".clickable")) focusCommandInput();
     });
+
+    if("serviceWorker" in navigator && location.protocol === "https:"){
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
   </script>
 </body>
 </html>

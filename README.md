@@ -2,7 +2,7 @@
 
 > Poor Man's Radio for Everyone.
 
-SomaFM Core is a terminal-style web radio player for SomaFM and a small curated set of independent external stations. It runs as a plain browser page and can also be wrapped as an Android / Google TV APK from the same `index.html`.
+SomaFM Core is a terminal-style web radio player for SomaFM and a small curated set of independent external stations. It runs as a plain browser page, an installable PWA, and an Android / Google TV launcher APK.
 
 **🔊 Live: [https://domrique.github.io/somafm-core/](https://domrique.github.io/somafm-core/)**
 
@@ -19,7 +19,7 @@ Language: **English** / [Русский](README.ru.md)
 - Now-playing metadata for SomaFM and supported external ICY streams.
 - Last station restore via `last` / `resume`.
 - Random station playback via `random` / `rnd`.
-- Android / Google TV build with D-pad friendly controls.
+- Android / Google TV launcher APK with D-pad friendly controls.
 
 ## Run
 
@@ -35,7 +35,11 @@ Open `index.html` in any modern browser.
 
 ### Android APK
 
-The web app and APK use the same source file: `index.html`.
+The APK opens the live PWA build:
+
+[https://domrique.github.io/somafm-core/](https://domrique.github.io/somafm-core/)
+
+This keeps the Android version identical to the web version and lets Android use the normal browser audio stack for better background playback.
 
 Download the latest APK:
 
@@ -52,6 +56,8 @@ Artifacts:
 
 ```text
 dist/web/index.html
+dist/web/manifest.webmanifest
+dist/web/sw.js
 dist/android/SomaFMCore-player-release.apk
 ```
 
@@ -78,6 +84,7 @@ You can use the bottom bar, click a station, use keyboard / D-pad, or type comma
 
 - `index.html` - the application source for browser and APK.
 - `index.somafm-only.html` - backup version without external radio.
+- `manifest.webmanifest` / `sw.js` - PWA metadata and lightweight cache worker.
 - `assets/screenshot-main.png` - README screenshot.
 - `android/` - Capacitor Android project.
 - `scripts/` - build, packaging and Android asset scripts.

@@ -16,6 +16,9 @@ try {
 
   Copy-Item -LiteralPath (Join-Path $root "index.html") -Destination (Join-Path $webDist "index.html") -Force
   Copy-Item -LiteralPath (Join-Path $root "favicon.ico") -Destination (Join-Path $webDist "favicon.ico") -Force
+  Copy-Item -LiteralPath (Join-Path $root "manifest.webmanifest") -Destination (Join-Path $webDist "manifest.webmanifest") -Force
+  Copy-Item -LiteralPath (Join-Path $root "sw.js") -Destination (Join-Path $webDist "sw.js") -Force
+  Copy-Item -LiteralPath (Join-Path $root "assets") -Destination (Join-Path $webDist "assets") -Recurse -Force
   Copy-Item -LiteralPath $apkSource -Destination $apkTarget -Force
 
   npm run verify:shared

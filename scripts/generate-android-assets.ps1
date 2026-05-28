@@ -83,4 +83,7 @@ foreach ($entry in $splashTargets.GetEnumerator()) {
   Save-Png (New-IconBitmap -Size $size -Padding ([Math]::Round($size * 0.34)) -Background "#121212") (Join-Path $resRoot $entry.Key)
 }
 
+Save-Png (New-IconBitmap -Size 192 -Padding 24 -Background "#007acc") (Join-Path $root "assets\pwa-icon-192.png")
+Save-Png (New-IconBitmap -Size 512 -Padding 64 -Background "#007acc") (Join-Path $root "assets\pwa-icon-512.png")
+
 Write-Output "Generated Android launcher icons and splash images from favicon.ico"
