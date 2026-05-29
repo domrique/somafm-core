@@ -700,8 +700,16 @@
       updateTelemetry();
     }
 
+    function enterPromptState(){
+      appState = hasActivePlayback() ? STATEPLAY : STATEPROMPT;
+      clearTvFocus();
+      updatePathDisplay();
+      updateStatus();
+    }
+
     function logAudioDebug(eventName){
       if(!debugMode) return;
+      enterPromptState();
       const err = audioPlayer.error ? ` err=${audioPlayer.error.code}` : "";
       print(
         `audio: ${escapeHtml(eventName)} paused=${audioPlayer.paused} ready=${audioPlayer.readyState} net=${audioPlayer.networkState} state=${escapeHtml(streamState)}${err}`,
@@ -837,6 +845,7 @@
     }
 
     function setMuted(nextMuted, shouldPrint=false){
+      if(shouldPrint) enterPromptState();
       isMuted = nextMuted;
       audioPlayer.muted = isMuted;
       updateVolumeUi();
@@ -917,33 +926,36 @@
           if(fromUI) clearStationTvFocus();
           playStation(num-1);
         }
-        else print(`bash: ${escapeHtml(cmd)}: frequency index out of range`, "c-err");
+        else {
+          enterPromptState();
+          print(`bash: ${escapeHtml(cmd)}: frequency index out of range`, "c-err");
+        }
         return;
       }
 
       if (cmd === "cls") {
         outputDiv.innerHTML = "";
-        clearTvFocus();
-        appState = hasActivePlayback() ? STATEPLAY : STATEPROMPT;
-        updatePathDisplay();
-        updateStatus();
+        enterPromptState();
         scrollToBottom();
         return;
       }
 
       if (cmd === "help" || cmd === "man") {
+        enterPromptState();
         printHelp();
         return;
       }
 
       if (cmd === "debug") {
         debugMode = !debugMode;
+        enterPromptState();
         print(`debug: ${debugMode ? "on" : "off"}`, "c-dim");
         if(debugMode) logAudioDebug("snapshot");
         return;
       }
 
       if (cmd === "vol" || cmd === "volume") {
+        enterPromptState();
         volPopup.classList.toggle("show");
         updateVolumeUi();
         print(`Volume gate: ${isMuted ? "MUTE" : Math.round(volume * 100) + "%"}.`, "c-dim");
@@ -969,7 +981,7 @@
         if(!hasActivePlayback()) return;
         userPausedPlayback = false;
         stopPlayback();
-        updateStatus();
+        enterPromptState();
         print("Signal stopped.", "c-dim");
         return;
       }
@@ -981,6 +993,7 @@
       
       if (cmd === "space" || cmd === "pause") {
         if(!hasActivePlayback()) return;
+        enterPromptState();
         if(audioPlayer.paused) {
           userPausedPlayback = false;
           setStreamState("CONNECTING");
@@ -1001,6 +1014,7 @@
         return;
       }
 
+      enterPromptState();
       print(`bash: ${escapeHtml(cmd)}: command not found`, "c-err");
     }
 
@@ -1117,6 +1131,7 @@
     function playLastStation(){
       const idx = findStationIndexById(getLastStationId());
       if(idx < 0) {
+        enterPromptState();
         print("No last signal stored.", "c-dim");
         return;
       }
@@ -1256,7 +1271,7 @@
       if(!opts.keepStatus) {
         currentStation = null;
         refreshStationHighlight();
-        if(appState === STATEPLAY) appState = STATELIST;
+        if(appState === STATEPLAY) appState = STATEPROMPT;
         updatePathDisplay();
       }
       updateTelemetry();
