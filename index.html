@@ -917,7 +917,15 @@
         return;
       }
 
-      if (cmd === "cls") { outputDiv.innerHTML = ""; return; }
+      if (cmd === "cls") {
+        outputDiv.innerHTML = "";
+        clearTvFocus();
+        if(hasActivePlayback()) appState = STATEPLAY;
+        updatePathDisplay();
+        updateStatus();
+        scrollToBottom();
+        return;
+      }
 
       if (cmd === "help" || cmd === "man") {
         printHelp();
