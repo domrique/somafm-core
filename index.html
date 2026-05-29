@@ -119,6 +119,8 @@
 
     .clickable{ cursor:pointer; }
     .clickable:hover{ background-color:#333; color:#fff; text-decoration:underline; }
+    .cmd-link{ cursor:pointer; }
+    .cmd-link:hover{ background-color:#333; color:#fff; text-decoration:underline; }
     .tv-focus {
       outline: 2px solid var(--cmd-color);
       outline-offset: 2px;
@@ -560,11 +562,20 @@
         });
     }
 
+    function clearTvFocus(){
+      document.querySelectorAll(".tv-focus").forEach(el => el.classList.remove("tv-focus"));
+      tvFocusIndex = -1;
+    }
+
+    function clearStationTvFocus(){
+      document.querySelectorAll(".station-item.tv-focus").forEach(el => el.classList.remove("tv-focus"));
+      tvFocusIndex = -1;
+    }
+
     function setTvFocus(nextIndex){
       const items = getTvFocusables();
-      document.querySelectorAll(".tv-focus").forEach(el => el.classList.remove("tv-focus"));
+      clearTvFocus();
       if(!items.length) {
-        tvFocusIndex = -1;
         return null;
       }
       tvFocusIndex = ((nextIndex % items.length) + items.length) % items.length;
@@ -583,6 +594,43 @@
         return;
       }
       setTvFocus(tvFocusIndex + delta);
+    }
+
+    function moveTvFocusVertical(direction){
+      const items = getTvFocusables();
+      if(!items.length) return;
+      if(tvFocusIndex < 0 || !items[tvFocusIndex]) {
+        const activeIndex = items.findIndex(el => el.classList.contains("station-current"));
+        setTvFocus(activeIndex >= 0 ? activeIndex : 0);
+        return;
+      }
+
+      const current = items[tvFocusIndex];
+      const currentRect = current.getBoundingClientRect();
+      const currentX = currentRect.left + currentRect.width / 2;
+      const currentY = currentRect.top + currentRect.height / 2;
+      const rowGap = Math.max(10, currentRect.height * 0.65);
+
+      const ranked = items
+        .map((el, index) => {
+          const rect = el.getBoundingClientRect();
+          const x = rect.left + rect.width / 2;
+          const y = rect.top + rect.height / 2;
+          return {
+            index,
+            dy: y - currentY,
+            score: Math.abs(y - currentY) * 4 + Math.abs(x - currentX)
+          };
+        })
+        .filter(item => direction > 0 ? item.dy > rowGap : item.dy < -rowGap)
+        .sort((a, b) => a.score - b.score);
+
+      if(ranked.length) {
+        setTvFocus(ranked[0].index);
+        return;
+      }
+
+      setTvFocus(tvFocusIndex + direction * 5);
     }
 
     function activateTvFocus(){
@@ -861,7 +909,10 @@
 
       const num = parseInt(cmd, 10);
       if(!isNaN(num)){
-        if(stations[num-1]) playStation(num-1);
+        if(stations[num-1]) {
+          if(fromUI) clearStationTvFocus();
+          playStation(num-1);
+        }
         else print(`bash: ${escapeHtml(cmd)}: frequency index out of range`, "c-err");
         return;
       }
@@ -879,13 +930,22 @@
         if(debugMode) logAudioDebug("snapshot");
         return;
       }
+
+      if (cmd === "vol" || cmd === "volume") {
+        volPopup.classList.toggle("show");
+        updateVolumeUi();
+        print(`Volume gate: ${isMuted ? "MUTE" : Math.round(volume * 100) + "%"}.`, "c-dim");
+        return;
+      }
       
       if (cmd === "home" || cmd === "back" || cmd === "esc") {
         if(appState === STATELIST) {
           updateStatus();
+          clearTvFocus();
+          scrollToBottom();
           return;
         }
-        renderList();
+        renderList({ focusCurrentStation: false, scrollBottom: true });
         return;
       }
 
@@ -938,16 +998,23 @@
       print(`bash: ${escapeHtml(cmd)}: command not found`, "c-err");
     }
 
+    function cmdLink(cmd, label=cmd){
+      return `<span class="cmd-link c-cmd" role="button" onclick="uiExec('${escapeAttr(cmd)}')">${escapeHtml(label)}</span>`;
+    }
+
     function printHelp(){
       print(`<span class="c-path">man somafmcore</span>`, "c-path");
       print(`<span class="c-cmd">[number]</span> play station by index`);
-      print(`<span class="c-cmd">space</span> play / pause`);
-      print(`<span class="c-cmd">random</span> / <span class="c-cmd">rnd</span> play random station`);
-      print(`<span class="c-cmd">last</span> resume last station`);
-      print(`<span class="c-cmd">mute</span> / <span class="c-cmd">unmute</span> toggle audio mute`);
-      print(`<span class="c-cmd">home</span> / <span class="c-cmd">esc</span> show station list without stopping`);
-      print(`<span class="c-cmd">stop</span> stop playback`);
-      print(`<span class="c-cmd">debug</span> toggle audio event log`);
+      print(`${cmdLink("space")} / ${cmdLink("pause")} play / pause`);
+      print(`${cmdLink("random")} / ${cmdLink("rnd")} play random station`);
+      print(`${cmdLink("last")} / ${cmdLink("resume")} resume last station`);
+      print(`${cmdLink("mute")} / ${cmdLink("unmute")} toggle audio mute`);
+      print(`${cmdLink("vol")} / ${cmdLink("volume")} show volume gate`);
+      print(`${cmdLink("home")} / ${cmdLink("back")} / ${cmdLink("esc")} show station list without stopping`);
+      print(`${cmdLink("stop")} stop playback`);
+      print(`${cmdLink("cls")} clear terminal output`);
+      print(`${cmdLink("help")} / ${cmdLink("man")} show this manual`);
+      print(`${cmdLink("debug")} toggle audio event log`);
     }
 
     // --- DATA FETCHING ---
@@ -985,7 +1052,8 @@
       return p?.url || "";
     }
 
-    function renderList(){
+    function renderList(options={}){
+      const { focusCurrentStation = true, scrollBottom = false } = options;
       appState = STATELIST;
       updatePathDisplay();
       
@@ -1018,9 +1086,15 @@
       refreshStationHighlight();
       updateStatus();
       requestAnimationFrame(() => {
-        const items = getTvFocusables();
-        const activeIndex = items.findIndex(el => el.classList.contains("station-current"));
-        if(activeIndex >= 0) setTvFocus(activeIndex);
+        if(scrollBottom) scrollToBottom();
+        if(focusCurrentStation) {
+          const items = getTvFocusables();
+          const activeIndex = items.findIndex(el => el.classList.contains("station-current"));
+          if(activeIndex >= 0) setTvFocus(activeIndex);
+        } else {
+          clearTvFocus();
+        }
+        if(scrollBottom) scrollToBottom();
       });
     }
 
@@ -1548,12 +1622,18 @@
 
     document.addEventListener("keydown", (e) => {
       if(e.target === inputField) return;
-      if(e.key === "ArrowDown" || e.key === "ArrowRight") {
+      if(e.key === "ArrowRight") {
         e.preventDefault();
         moveTvFocus(1);
-      } else if(e.key === "ArrowUp" || e.key === "ArrowLeft") {
+      } else if(e.key === "ArrowLeft") {
         e.preventDefault();
         moveTvFocus(-1);
+      } else if(e.key === "ArrowDown") {
+        e.preventDefault();
+        moveTvFocusVertical(1);
+      } else if(e.key === "ArrowUp") {
+        e.preventDefault();
+        moveTvFocusVertical(-1);
       } else if(e.key === "Enter") {
         e.preventDefault();
         activateTvFocus();
