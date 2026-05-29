@@ -939,12 +939,6 @@
       }
       
       if (cmd === "home" || cmd === "back" || cmd === "esc") {
-        if(appState === STATELIST) {
-          updateStatus();
-          clearTvFocus();
-          scrollToBottom();
-          return;
-        }
         renderList({ focusCurrentStation: false, scrollBottom: true });
         return;
       }
