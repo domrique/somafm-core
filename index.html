@@ -406,6 +406,7 @@
     ];
 
     // --- STATE ---
+    const STATEPROMPT = 0;
     const STATELIST = 1;
     const STATEPLAY = 2;
     let appState = STATELIST;
@@ -804,6 +805,9 @@
         const lastStation = getStationById(getLastStationId());
         btns += controlButton("uiExec('random')", "", "RND", `aria-label="Random station"`);
         btns += controlButton("uiExec('help')", "", "HELP", `aria-label="Help"`);
+        if(appState !== STATELIST) {
+          btns += controlButton("uiExec('home')", "~", "HOME", `aria-label="Home"`);
+        }
         infoLabel.innerText = "STATUS";
         infoTrack.innerText = lastStation ? `Last signal: ${lastStation.name}. Type last.` : "System Ready. Select frequency.";
         infoTrack.dataset.track = "";
@@ -920,7 +924,7 @@
       if (cmd === "cls") {
         outputDiv.innerHTML = "";
         clearTvFocus();
-        if(hasActivePlayback()) appState = STATEPLAY;
+        appState = hasActivePlayback() ? STATEPLAY : STATEPROMPT;
         updatePathDisplay();
         updateStatus();
         scrollToBottom();
