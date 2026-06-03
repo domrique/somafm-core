@@ -518,6 +518,34 @@
       return playbackActive && currentStation;
     }
 
+    function getRadioKeepAlivePlugin(){
+      const cap = window.Capacitor;
+      if(!cap || !cap.Plugins || !cap.Plugins.RadioKeepAlive) return null;
+      if(typeof cap.isNativePlatform === "function" && !cap.isNativePlatform()) return null;
+      return cap.Plugins.RadioKeepAlive;
+    }
+
+    function getRadioKeepAliveTrack(){
+      if(lastNowPlayingText) return lastNowPlayingText;
+      if(!currentStation) return "Radio stream active.";
+      return supportsNowPlaying(currentStation) ? "Radio stream active." : "External stream active.";
+    }
+
+    function startRadioKeepAlive(){
+      const plugin = getRadioKeepAlivePlugin();
+      if(!plugin || !currentStation) return;
+      plugin.start({
+        station: currentStation.name,
+        track: getRadioKeepAliveTrack()
+      }).catch(() => {});
+    }
+
+    function stopRadioKeepAlive(){
+      const plugin = getRadioKeepAlivePlugin();
+      if(!plugin) return;
+      plugin.stop().catch(() => {});
+    }
+
     function prefersDesktopInput(){
       return window.matchMedia && window.matchMedia("(pointer: fine)").matches;
     }
@@ -997,7 +1025,7 @@
         if(audioPlayer.paused) {
           userPausedPlayback = false;
           setStreamState("CONNECTING");
-          audioPlayer.play();
+          audioPlayer.play().then(() => startRadioKeepAlive()).catch(() => {});
           if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
           isVisRunning = true;
           drawVisualizer();
@@ -1005,6 +1033,7 @@
           print("Signal resumed.", "c-dim");
         } else {
           userPausedPlayback = true;
+          stopRadioKeepAlive();
           audioPlayer.pause();
           isVisRunning = false;
           setStreamState("PAUSED");
@@ -1203,6 +1232,7 @@
          print(`Connection established.`, "c-dim");
          playbackStartedAt = Date.now();
          setStreamState("ONLINE");
+         startRadioKeepAlive();
          
          // Start visualizer
          isVisRunning = true;
@@ -1232,6 +1262,7 @@
          audioPlayer.play().then(() => {
             playbackStartedAt = Date.now();
             setStreamState("ONLINE");
+            startRadioKeepAlive();
             isVisRunning = true;
             drawVisualizer();
             if(supportsNowPlaying(st)) startPolling(st.id);
@@ -1250,6 +1281,7 @@
     }
 
     function stopPlayback(opts={}){
+      stopRadioKeepAlive();
       clearPauseRecoveryTimer();
       clearReconnectTimer();
       isVisRunning = false;
@@ -1362,6 +1394,7 @@
         isVisRunning = true;
         drawVisualizer();
         setStreamState("ONLINE");
+        startRadioKeepAlive();
       }).catch(() => {
         reconnectInFlight = false;
         if(!hasActivePlayback()) return;
@@ -1420,6 +1453,7 @@
         isVisRunning = true;
         drawVisualizer();
         setStreamState("ONLINE");
+        startRadioKeepAlive();
         updateStatus();
       }).catch(() => {
         reconnectInFlight = false;
@@ -1433,6 +1467,7 @@
       if(!txt || txt === lastNowPlayingText) return;
       lastNowPlayingText = txt;
       updateStatus();
+      startRadioKeepAlive();
 
       if(txt !== lastTrackPrinted){
         lastTrackPrinted = txt;
@@ -1624,6 +1659,7 @@
       reconnectInFlight = false;
       reconnectAttempts = 0;
       if(hasActivePlayback()) setStreamState("ONLINE");
+      if(hasActivePlayback() && !userPausedPlayback) startRadioKeepAlive();
     });
     audioPlayer.addEventListener("pause", () => {
       logAudioDebug("pause");
