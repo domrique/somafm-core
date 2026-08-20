@@ -85,6 +85,7 @@
     .c-path { color: var(--prompt-path); font-weight:bold; }
     .c-cmd  { color: var(--cmd-color); }
     .c-dim  { color: #666; }
+    .c-group { color: var(--prompt-path); font-weight:bold; margin-top: 10px; opacity: .85; }
     .c-err  { color: #f44747; }
     .c-vis  { color: var(--vis-color); font-weight:bold; }
 
@@ -355,6 +356,29 @@
     // External radio policy: keep HTTPS streams that fit the underground terminal
     // vibe. Some weaker candidates stay here for real-device debugging.
     const EXTRA_STATIONS = [
+
+      // --- radio paradise ---
+      ext("radio-paradise-main", "Radio Paradise Main", "eclectic", "Human-sequenced rock, electronic and global cuts without ads.", "https://stream.radioparadise.com/aac-128"),
+      ext("radio-paradise-rock", "Radio Paradise Rock", "rock", "Deep rock mix: classic weight, modern edges and long arcs.", "https://stream.radioparadise.com/rock-128"),
+      ext("radio-paradise-mellow", "Radio Paradise Mellow", "mellow", "Slow-burn guitars, electronic shade and softer deep cuts.", "https://stream.radioparadise.com/mellow-128"),
+      ext("radio-paradise-global", "Radio Paradise Global", "global", "Worldwide grooves, folk fragments and border-crossing records.", "https://stream.radioparadise.com/global-128"),
+
+      // --- dnb / jungle / bass ---
+      ext("bassdrive", "Bassdrive", "dnb", "Long-running Drum and Bass signal for jungle heads and night coders.", "https://ice.bassdrive.net/stream"),
+      ext("full-spectrum-radio", "Full Spectrum Radio", "dnb", "Drum and bass, jungle and bass pressure from the sharper end.", "https://fullspectrumradio.com:8000/fslisten"),
+      ext("uk-bass-radio", "UK Bass Radio", "bass", "UK bass, garage, jungle and underground pressure for system tests.", "https://s2.ssl-stream.com/listen/uk_bass_radio/stream"),
+      ext("dnbradio-fw", "DNBRadio FW", "dnb", "Alternate DNBRadio feed for field testing the low-end path.", "https://fw.dnbradio.com/dnbradio_main.mp3"),
+      ext("atmospheric-dnb-source", "Atmospheric DnB s0urce", "atmospheric-dnb", "Deep atmospheric drum and bass for long-form focus drift.", "https://brokenbeats.net/stream/aac"),
+      ext("liquid-dnb", "Liquid DnB", "liquid-dnb", "Liquid drum and bass candidate feed for signal testing.", "https://antares.dribbcast.com/proxy/dave1/stream/"),
+      ext("futuredrumz", "Futuredrumz", "dnb", "Drum and bass candidate feed from the old internet lane.", "https://futuredr.radioca.st/;?"),
+      ext("bassdrive-radiocast", "Bassdrive Radioca.st", "dnb", "Alternate Bassdrive endpoint kept for network comparison.", "https://bassdrive.radioca.st/stream"),
+      ext("sub-fm", "Sub FM", "bass", "Dubstep, garage, jungle and bass mutation candidate from the sub layer.", "https://subfm.radioca.st/Sub.FM"),
+      ext("flex-fm", "Flex FM", "jungle", "London pirate lane for jungle, drum and bass and garage pressure.", "https://a2.asurahosting.com:7400/radio.mp3"),
+      ext("reprezent", "Reprezent", "grime", "South London youth radio with grime, dnb and UK rap heat.", "https://radio.canstream.co.uk:8022/live.mp3"),
+      ext("rinse-uk", "Rinse FM", "grime", "London pirate-heritage grime and bass signal, direct from the Rinse family.", "https://admin.stream.rinse.fm/proxy/rinse_uk/stream"),
+      ext("rinse-france", "Rinse France", "bass", "French outpost of the Rinse family for grime and bass pressure.", "https://radio10.pro-fhi.net/radio/9041/stream"),
+
+      // --- psy / techno / club ---
       ext("hirschmilch-psytrance", "Hirschmilch Psytrance", "psytrance", "Full-throttle psytrance from the German underground feed.", "https://hirschmilch.de:7501/psytrance.mp3"),
       ext("hirschmilch-progressive", "Hirschmilch Progressive", "progressive", "Rolling progressive trance and deep hypnotic drive.", "https://hirschmilch.de:7501/progressive.mp3"),
       ext("hirschmilch-prog-house", "Hirschmilch Prog-House", "prog-house", "Long-form progressive house with a night-drive pulse.", "https://hirschmilch.de:7501/prog-house.mp3"),
@@ -362,48 +386,67 @@
       ext("hirschmilch-techno", "Hirschmilch Techno", "techno", "Straight machine rhythm from the Hirschmilch bunker.", "https://hirschmilch.de:7501/techno.mp3"),
       ext("hirschmilch-chillout", "Hirschmilch Chillout", "chillout", "Downtempo psy-flavored decompression after the tunnel.", "https://hirschmilch.de:7501/chillout.mp3"),
       ext("igfm-main", "Intergalactic FM", "electro", "Cyberpunk, Italo-disco and raw electro from The Hague.", "https://radio.intergalactic.fm/1"),
-      ext("nightwave-plaza", "Nightwave Plaza", "vaporwave", "Vaporwave, future funk and cassette-lit aesthetic beats.", "https://radio.plaza.one/mp3"),
-      ext("kfrp", "KFRP Radio", "underground-rap", "Underground hip-hop, horrorcore and dark instrumentals from Lincoln.", "https://radio.kfrp.live/listen/kfrp_radio/radio.mp3"),
-      ext("reggae141", "Reggae141", "roots-reggae", "Roots, rocksteady and dubwise pressure from the classic online reggae lane.", "https://hestia2.cdnstream.com/1301_128"),
-      ext("dublab", "dublab", "eclectic", "Los Angeles transmission for future roots, odd pop and deep selectors.", "https://dublab.out.airtime.pro/dublab_a"),
       ext("the-lot-radio", "The Lot Radio", "electronic", "Brooklyn booth energy: live DJs, dance music and street-level sets.", "https://livepeercdn.studio/hls/85c28sa2o8wppm58/index.m3u8"),
+      ext("operator-radio", "Operator Radio", "electronic", "Rotterdam frequency for DJs, electronic music and local culture.", "https://origin.streamnerd.nl/operator/operator/icecast.audio"),
+      ext("foundation-fm", "Foundation FM", "electronic", "London selector radio crossing house, techno, dnb and jazz edits.", "https://streamer.radio.co/s0628bdd53/listen"),
+
+      // --- selector / community ---
+      ext("dublab", "dublab", "eclectic", "Los Angeles transmission for future roots, odd pop and deep selectors.", "https://dublab.out.airtime.pro/dublab_a"),
       ext("noods-radio", "Noods Radio", "leftfield", "Bristol independent radio with grime, ambient, punk and club detours.", "https://noods-radio.radiocult.fm/stream"),
       ext("kiosk-radio", "Kiosk Radio", "eclectic", "Brussels booth culture: local selectors, oddball dance and global dust.", "https://kioskradiobxl.out.airtime.pro/kioskradiobxl_b"),
-      ext("operator-radio", "Operator Radio", "electronic", "Rotterdam frequency for DJs, electronic music and local culture.", "https://origin.streamnerd.nl/operator/operator/icecast.audio"),
       ext("netil-radio", "Netil Radio", "community", "East London community radio with leftfield music and art-space energy.", "https://netilradio.out.airtime.pro/netilradio_a"),
+      ext("doyouworld", "Do!!You!!!World", "beats", "London oddball radio for beats, dubwise edits and outsider selection.", "https://doyouworld.out.airtime.pro/doyouworld_a"),
+      ext("refuge-worldwide", "Refuge Worldwide", "community", "Berlin community radio candidate kept for on-device signal checks.", "https://streaming.radio.co/s3699c5e49/listen"),
+      ext("lyl-radio", "LYL Radio", "eclectic", "French independent radio candidate for obscure global soundscapes.", "https://icecast.lyl.live/live"),
+      ext("fip-radio", "FIP Radio", "eclectic", "Ad-free Paris selector flow candidate with broad human curation.", "https://icecast.radiofrance.fr/fip-midfi.mp3"),
+      ext("worldwide-fm", "Worldwide FM", "eclectic", "Gilles Peterson's global selector flow with a broad human touch.", "https://worldwide-fm.radiocult.fm/stream"),
+
+      // --- freeform / college / radio-art ---
       ext("resonance-fm", "Resonance FM", "experimental", "London community radio for experimental sound and art.", "https://stream.resonance.fm/resonance"),
       ext("kexp", "KEXP", "indie-rock", "Seattle institution for indie, rock, hip-hop, live rooms and deep finds.", "https://kexp.streamguys1.com/kexp160.aac"),
       ext("wxyc", "WXYC Chapel Hill", "college", "UNC freeform radio: noise, jazz, punk, global and basement discoveries.", "https://audio-mp3.ibiblio.org/wxyc.mp3"),
-      ext("radio-paradise-main", "Radio Paradise Main", "eclectic", "Human-sequenced rock, electronic and global cuts without ads.", "https://stream.radioparadise.com/aac-128"),
-      ext("radio-paradise-rock", "Radio Paradise Rock", "rock", "Deep rock mix: classic weight, modern edges and long arcs.", "https://stream.radioparadise.com/rock-128"),
-      ext("radio-paradise-mellow", "Radio Paradise Mellow", "mellow", "Slow-burn guitars, electronic shade and softer deep cuts.", "https://stream.radioparadise.com/mellow-128"),
-      ext("radio-paradise-global", "Radio Paradise Global", "global", "Worldwide grooves, folk fragments and border-crossing records.", "https://stream.radioparadise.com/global-128"),
+      ext("wmbr", "WMBR MIT", "college", "MIT freeform radio: punk, weird records, noise, rap and deep shelves.", "https://wmbr.org:8002/hi"),
+      ext("kxlu", "KXLU", "indie-punk", "Los Angeles college radio with punk, indie, noise and left turns.", "https://kxlu.streamguys1.com/kxlu-hi"),
+      ext("cashmere-radio", "Cashmere Radio", "experimental", "Berlin freeform radio for experimental sound, radio art and noise.", "https://cashmereradio.out.airtime.pro/cashmereradio_a"),
+      ext("kchung", "KCHUNG", "freeform", "Los Angeles freeform collective radio with punk and odd transmissions.", "https://kchung-radio-01e54a81.radiocult.fm/stream"),
+
+      // --- reggae / dub / roots ---
+      ext("reggae141", "Reggae141", "roots-reggae", "Roots, rocksteady and dubwise pressure from the classic online reggae lane.", "https://hestia2.cdnstream.com/1301_128"),
+      ext("roots-legacy", "Roots Legacy", "roots-reggae", "French roots, dub and reggae candidate with a stubborn signal.", "https://l.rootslegacy.fr/;"),
+      ext("roots-legacy-alt", "Roots Legacy Alt", "roots-reggae", "Alternate Roots Legacy endpoint for real-device checks.", "https://l.rootslegacy.fr/stream/1/"),
+
+      // --- metal / punk ---
+      ext("kfrp", "KFRP Radio", "underground-rap", "Underground hip-hop, horrorcore and dark instrumentals from Lincoln.", "https://radio.kfrp.live/listen/kfrp_radio/radio.mp3"),
       ext("bigr-80s-metal", "Big R 80s Metal", "metal", "Hair, speed and classic heavy metal from the cassette-era vault.", "https://bigrradio.cdnstream1.com/5186_128"),
-      ext("box-lofi", "BOX Lofi", "lo-fi", "Lo-fi hip-hop and dusty instrumental beats for late terminals.", "https://play.streamafrica.net/lofiradio"),
-      ext("moon-phase-chill", "Moon Phase Chill", "lo-fi", "Warm lo-fi, chillhop and mellow beat loops from the quiet side.", "https://dc1.serverse.com/proxy/dnutqhxl/stream"),
-      ext("bassdrive", "Bassdrive", "dnb", "Long-running Drum and Bass signal for jungle heads and night coders.", "https://ice.bassdrive.net/stream"),
-      ext("full-spectrum-radio", "Full Spectrum Radio", "dnb", "Drum and bass, jungle and bass pressure from the sharper end.", "https://fullspectrumradio.com:8000/fslisten"),
-      ext("uk-bass-radio", "UK Bass Radio", "bass", "UK bass, garage, jungle and underground pressure for system tests.", "https://s2.ssl-stream.com/listen/uk_bass_radio/stream"),
-      ext("dnbradio-fw", "DNBRadio FW", "dnb", "Alternate DNBRadio feed for field testing the low-end path.", "https://fw.dnbradio.com/dnbradio_main.mp3"),
-      ext("atmospheric-dnb-source", "Atmospheric DnB s0urce", "atmospheric-dnb", "Deep atmospheric drum and bass for long-form focus drift.", "https://brokenbeats.net/stream/aac"),
       ext("metal-only", "Metal Only", "metal", "Heavy metal channel with less gloss and more amplifier heat.", "https://metalonly.sp.radio.fm/stream"),
       ext("virage-metal", "Virage Metal", "metal", "Modern hard rock and metal with a stable clean signal.", "https://virage-radio-metal.ice.infomaniak.ch/virage-radio-metal.mp3"),
       ext("punk-rock-demo", "Punk Rock Demonstration", "punk", "Independent punk rock broadcast with raw basement energy.", "https://radio.punkrockdemo.com/"),
       ext("punkrockers-radio", "Punkrockers Radio", "punk", "Punk rock candidate feed kept for real-device debugging.", "https://stream.punkrockers-radio.de:8443/mp3"),
       ext("dkfm", "DKFM", "post-punk", "Shoegaze, dream pop, post-punk and guitar fog for the late feed.", "https://kathy.torontocast.com:2005/stream"),
-      ext("wmbr", "WMBR MIT", "college", "MIT freeform radio: punk, weird records, noise, rap and deep shelves.", "https://wmbr.org:8002/hi"),
-      ext("kxlu", "KXLU", "indie-punk", "Los Angeles college radio with punk, indie, noise and left turns.", "https://kxlu.streamguys1.com/kxlu-hi"),
-      ext("doyouworld", "Do!!You!!!World", "beats", "London oddball radio for beats, dubwise edits and outsider selection.", "https://doyouworld.out.airtime.pro/doyouworld_a"),
-      ext("refuge-worldwide", "Refuge Worldwide", "community", "Berlin community radio candidate kept for on-device signal checks.", "https://streaming.radio.co/s3699c5e49/listen"),
-      ext("liquid-dnb", "Liquid DnB", "liquid-dnb", "Liquid drum and bass candidate feed for signal testing.", "https://antares.dribbcast.com/proxy/dave1/stream/"),
-      ext("futuredrumz", "Futuredrumz", "dnb", "Drum and bass candidate feed from the old internet lane.", "https://futuredr.radioca.st/;?"),
-      ext("bassdrive-radiocast", "Bassdrive Radioca.st", "dnb", "Alternate Bassdrive endpoint kept for network comparison.", "https://bassdrive.radioca.st/stream"),
-      ext("roots-legacy", "Roots Legacy", "roots-reggae", "French roots, dub and reggae candidate with a stubborn signal.", "https://l.rootslegacy.fr/;"),
-      ext("roots-legacy-alt", "Roots Legacy Alt", "roots-reggae", "Alternate Roots Legacy endpoint for real-device checks.", "https://l.rootslegacy.fr/stream/1/"),
-      ext("sub-fm", "Sub FM", "bass", "Dubstep, garage, jungle and bass mutation candidate from the sub layer.", "https://subfm.radioca.st/Sub.FM"),
-      ext("lyl-radio", "LYL Radio", "eclectic", "French independent radio candidate for obscure global soundscapes.", "https://icecast.lyl.live/live"),
-      ext("fip-radio", "FIP Radio", "eclectic", "Ad-free Paris selector flow candidate with broad human curation.", "https://icecast.radiofrance.fr/fip-midfi.mp3")
+      ext("metal-devastation", "Metal Devastation", "metal", "Heavy metal without the gloss, aimed straight at the distortion pedals.", "https://c13.radioboss.fm:18099/stream"),
+
+      // --- lo-fi / vaporwave ---
+      ext("nightwave-plaza", "Nightwave Plaza", "vaporwave", "Vaporwave, future funk and cassette-lit aesthetic beats.", "https://radio.plaza.one/mp3"),
+      ext("box-lofi", "BOX Lofi", "lo-fi", "Lo-fi hip-hop and dusty instrumental beats for late terminals.", "https://play.streamafrica.net/lofiradio"),
+      ext("moon-phase-chill", "Moon Phase Chill", "lo-fi", "Warm lo-fi, chillhop and mellow beat loops from the quiet side.", "https://dc1.serverse.com/proxy/dnutqhxl/stream"),
     ];
+
+    // --- EXTERNAL GROUPS ---
+    const EXTERNAL_GROUPS = [
+      { label: "radio paradise", test: (id, g) => id.startsWith("radio-paradise") },
+      { label: "dnb / jungle / bass", test: (id, g) => ["dnb", "jungle", "bass", "grime", "liquid-dnb", "atmospheric-dnb"].includes(g) },
+      { label: "psy / techno / club", test: (id, g) => id.startsWith("hirschmilch") || ["psytrance", "progressive", "prog-house", "techno", "electro", "electronic"].includes(g) },
+      { label: "selector / community", test: (id, g) => ["eclectic", "community", "beats", "leftfield", "global", "chillout"].includes(g) },
+      { label: "freeform / college / radio-art", test: (id, g) => ["college", "freeform", "indie-rock", "indie-punk", "experimental"].includes(g) },
+      { label: "reggae / dub / roots", test: (id, g) => g === "roots-reggae" },
+      { label: "metal / punk", test: (id, g) => ["metal", "punk", "post-punk", "underground-rap"].includes(g) },
+      { label: "lo-fi / vaporwave", test: (id, g) => ["lo-fi", "vaporwave"].includes(g) }
+    ];
+
+    function externalGroupLabel(id, genre){
+      const g = EXTERNAL_GROUPS.find(g => g.test(id, genre));
+      return g ? g.label : "misc";
+    }
 
     // --- STATE ---
     const STATEPROMPT = 0;
@@ -1123,13 +1166,20 @@
         .filter(item => item.st.source === "external");
       if(externalStations.length){
         print(`<span class="c-path">external@radio</span>: listing extra uplinks...`, "c-path");
-        let extraHtml = `<div class="stations-grid">`;
+        let curGroup = null;
+        let extraHtml = "";
         externalStations.forEach(({ st, i }) => {
+          const group = externalGroupLabel(st.id, st.genre);
+          if(group !== curGroup){
+            if(extraHtml) extraHtml += `</div>`;
+            extraHtml += `<div class="c-dim c-group">${escapeHtml(group)}</div><div class="stations-grid">`;
+            curGroup = group;
+          }
           const num = (i+1).toString().padStart(2,"0");
           const activeClass = currentStation && currentStation.id === st.id ? " station-current" : "";
           extraHtml += `<div class="station-item clickable${activeClass}" data-station-id="${escapeAttr(st.id)}" onclick="uiExec('${i+1}')"><span class="c-dim">${num}</span> ${escapeHtml(st.name)}</div>`;
         });
-        extraHtml += `</div>`;
+        if(extraHtml) extraHtml += `</div>`;
         print(extraHtml);
       }
       refreshStationHighlight();
