@@ -401,6 +401,19 @@
       ext("fip-radio", "FIP Radio", "eclectic", "Ad-free Paris selector flow candidate with broad human curation.", "https://icecast.radiofrance.fr/fip-midfi.mp3"),
       ext("worldwide-fm", "Worldwide FM", "eclectic", "Gilles Peterson's global selector flow with a broad human touch.", "https://worldwide-fm.radiocult.fm/stream"),
 
+      // --- jazz / funk / soul ---
+      ext("tsf-jazz", "TSF Jazz", "jazz", "Paris jazz signal: standards, bebop, soulful swings and late-night horns.", "https://tsfjazz.ice.infomaniak.ch/tsfjazz-high.mp3"),
+      ext("kuvo", "KUVO Jazz", "jazz", "Denver's jazz voice with live sets, Latin jazz and deep catalog cuts.", "https://kuvo-ice.streamguys1.com/kuvo-mp3-128"),
+      ext("jazz-radio", "Jazz Radio", "jazz", "French jazz network mixing swing, bossa and acid jazz flavors.", "https://jazzradio.ice.infomaniak.ch/jazzradio-high.mp3"),
+      ext("funky-radio", "FUNKY RADIO", "funk", "60s-70s funk and soul direct from the Italian crate-digging lane.", "https://funkyradio.streamingmedia.it/play.mp3"),
+      ext("fm80-funky", "FM 80 Funky Music", "funk", "80s disco, funk and soul gloss for the weekend terminal.", "https://listen.radioking.com/radio/467555/stream/523739"),
+
+      // --- hip-hop / jazz-hop / beats ---
+      ext("skyrock-klassiks", "Skyrock Klassiks", "hip-hop", "French classics signal for hip-hop and rap oldies.", "https://icecast.skyrock.net/s/klassiks_aac_64k"),
+      ext("kfrp", "KFRP Radio", "underground-rap", "Underground hip-hop, horrorcore and dark instrumentals from Lincoln.", "https://radio.kfrp.live/listen/kfrp_radio/radio.mp3"),
+      ext("radio-acid", "Radio ACID", "chillhop", "Chill grooves with g-funk edges: chillhop, funk and smooth electronics.", "https://stream.radioacid.com/stream"),
+      ext("record-lo-fi", "Record Lo-Fi", "chillhop", "Lo-fi hip-hop and jazzhop beats from the Russian radio machine.", "https://radiorecord.hostingradio.ru/lofi96.aacp"),
+
       // --- freeform / college / radio-art ---
       ext("resonance-fm", "Resonance FM", "experimental", "London community radio for experimental sound and art.", "https://stream.resonance.fm/resonance"),
       ext("kexp", "KEXP", "indie-rock", "Seattle institution for indie, rock, hip-hop, live rooms and deep finds.", "https://kexp.streamguys1.com/kexp160.aac"),
@@ -416,7 +429,6 @@
       ext("roots-legacy-alt", "Roots Legacy Alt", "roots-reggae", "Alternate Roots Legacy endpoint for real-device checks.", "https://l.rootslegacy.fr/stream/1/"),
 
       // --- metal / punk ---
-      ext("kfrp", "KFRP Radio", "underground-rap", "Underground hip-hop, horrorcore and dark instrumentals from Lincoln.", "https://radio.kfrp.live/listen/kfrp_radio/radio.mp3"),
       ext("bigr-80s-metal", "Big R 80s Metal", "metal", "Hair, speed and classic heavy metal from the cassette-era vault.", "https://bigrradio.cdnstream1.com/5186_128"),
       ext("metal-only", "Metal Only", "metal", "Heavy metal channel with less gloss and more amplifier heat.", "https://metalonly.sp.radio.fm/stream"),
       ext("virage-metal", "Virage Metal", "metal", "Modern hard rock and metal with a stable clean signal.", "https://virage-radio-metal.ice.infomaniak.ch/virage-radio-metal.mp3"),
@@ -437,9 +449,11 @@
       { label: "dnb / jungle / bass", test: (id, g) => ["dnb", "jungle", "bass", "grime", "liquid-dnb", "atmospheric-dnb"].includes(g) },
       { label: "psy / techno / club", test: (id, g) => id.startsWith("hirschmilch") || ["psytrance", "progressive", "prog-house", "techno", "electro", "electronic"].includes(g) },
       { label: "selector / community", test: (id, g) => ["eclectic", "community", "beats", "leftfield", "global", "chillout"].includes(g) },
+      { label: "jazz / funk / soul", test: (id, g) => ["jazz", "funk", "soul", "jazz-funk", "bebop"].includes(g) },
+      { label: "hip-hop / jazz-hop / beats", test: (id, g) => ["hip-hop", "rap", "underground-rap", "chillhop", "lofi", "beats", "jazz-hop", "boombap"].includes(g) },
       { label: "freeform / college / radio-art", test: (id, g) => ["college", "freeform", "indie-rock", "indie-punk", "experimental"].includes(g) },
       { label: "reggae / dub / roots", test: (id, g) => g === "roots-reggae" },
-      { label: "metal / punk", test: (id, g) => ["metal", "punk", "post-punk", "underground-rap"].includes(g) },
+      { label: "metal / punk", test: (id, g) => ["metal", "punk", "post-punk"].includes(g) },
       { label: "lo-fi / vaporwave", test: (id, g) => ["lo-fi", "vaporwave"].includes(g) }
     ];
 
