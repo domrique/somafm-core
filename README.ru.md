@@ -83,7 +83,6 @@ dist/android/SomaFMCore-player-release.apk
 ## Структура
 
 - `index.html` - исходник приложения для браузера и APK.
-- `index.somafm-only.html` - резервная версия без external radio.
 - `manifest.webmanifest` / `sw.js` - PWA-метаданные и лёгкий cache worker.
 - `assets/screenshot-main.png` - скриншот для README.
 - `android/` - Android-проект Capacitor.

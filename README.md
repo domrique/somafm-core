@@ -83,7 +83,6 @@ You can use the bottom bar, click a station, use keyboard / D-pad, or type comma
 ## Project Layout
 
 - `index.html` - the application source for browser and APK.
-- `index.somafm-only.html` - backup version without external radio.
 - `manifest.webmanifest` / `sw.js` - PWA metadata and lightweight cache worker.
 - `assets/screenshot-main.png` - README screenshot.
 - `android/` - Capacitor Android project.
