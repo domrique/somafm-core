@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="referrer" content="no-referrer" />
   <meta name="theme-color" content="#007acc" />
   <title>SomaFMcore: System Ready. Music On.</title>
   <link rel="icon" href="favicon.ico" sizes="any">
@@ -313,11 +314,15 @@
     </div>
   </div>
 
-  <audio id="audio-player" crossorigin="anonymous"></audio>
+  <audio id="audio-player" crossorigin="anonymous" referrerpolicy="no-referrer"></audio>
 
   <script>
     // --- DATA ---
     const SOMA_CHANNELS_API = "https://api.somafm.com/channels.json";
+    const IS_ANDROID_APP = !!(
+      (window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform() === "android")
+      || (/Android/i.test(navigator.userAgent) && /wv/i.test(navigator.userAgent))
+    );
     const SOMA_SONGS_URL = (id) => `https://somafm.com/songs/${encodeURIComponent(id)}.json`;
     const LAST_STATION_KEY = "somafmcore:lastStationId";
 
@@ -476,6 +481,7 @@
     let playbackStartedAt = null;
     let currentStreamInfo = "";
     let currentStreamUrl = "";
+    let triedStreamUrls = [];
     let streamState = "OFFLINE";
     let userPausedPlayback = false;
     let suppressPauseRecovery = false;
@@ -748,10 +754,19 @@
       return cacheBustUrl(currentStreamUrl);
     }
 
-    function getMp3BackupUrl(st){
-      if(!st || !st.id) return "";
-      if(st.source === "external") return "";
-      return `https://ice2.somafm.com/${st.id}-128-mp3`;
+    function getSomaUrlLadder(st){
+      if(!st || !st.id || st.source === "external") return [];
+      const id = st.id;
+      const mp3  = `https://ice2.somafm.com/${id}-128-mp3`;
+      const mp3h = `https://ice2.somafm.com/${id}-256-mp3`;
+      const aac  = `https://ice2.somafm.com/${id}-128-aac`;
+      const ice1 = `https://ice1.somafm.com/${id}-128-mp3`;
+      return IS_ANDROID_APP ? [mp3, mp3h, aac, ice1] : [aac, mp3];
+    }
+
+    function nextStreamUrl(st){
+      const ladder = getSomaUrlLadder(st);
+      return ladder.find(u => !triedStreamUrls.includes(u)) || "";
     }
 
     function supportsNowPlaying(st){
@@ -1146,7 +1161,7 @@
         throw new Error("No data");
       }catch(e){
         return EXTENDED_STATIONS
-          .map(st => ({ ...st, source:"somafm" }))
+          .map(st => ({ ...st, source:"somafm", streamUrl: IS_ANDROID_APP ? st.streamUrl.replace("-128-aac", "-128-mp3") : st.streamUrl }))
           .sort((a,b)=>a.name.localeCompare(b.name))
           .concat(EXTRA_STATIONS);
       }
@@ -1154,7 +1169,9 @@
 
     function getBestStream(pls){
       if(!Array.isArray(pls)) return "";
-      const p = pls.find(x => x.url?.includes("128-aac")) || pls[0];
+      const p = IS_ANDROID_APP
+        ? (pls.find(x => x.format === "mp3") || pls[0])
+        : (pls.find(x => x.url?.includes("128-aac")) || pls[0]);
       return p?.url || "";
     }
 
@@ -1277,9 +1294,12 @@
       if(hls) { hls.destroy(); hls=null; }
       
       if(url.endsWith(".pls") || url.endsWith(".m3u")) {
-         url = `https://ice2.somafm.com/${st.id}-128-aac`;
+         url = IS_ANDROID_APP
+           ? `https://ice2.somafm.com/${st.id}-128-mp3`
+           : `https://ice2.somafm.com/${st.id}-128-aac`;
       }
       currentStreamUrl = url;
+      triedStreamUrls = [currentStreamUrl];
       currentStreamInfo = parseStreamInfo(url);
       updateTelemetry();
 
@@ -1311,17 +1331,18 @@
          updateStatus();
       }).catch(e=>{
          print(`Connection failed: ${e.message}`, "c-err");
-         print(`Retrying with alternate freq...`, "c-dim");
-         const backupUrl = getMp3BackupUrl(st);
-         if(!backupUrl) {
+         const next = nextStreamUrl(st);
+         if(!next) {
             reconnectAttempts += 1;
             scheduleReconnect(`connection failed`, 1200);
             updateStatus();
             return;
          }
-         currentStreamUrl = backupUrl;
-         audioPlayer.src = backupUrl;
-         currentStreamInfo = parseStreamInfo(backupUrl);
+         print(`Retrying with alternate freq: ${next}`, "c-dim");
+         triedStreamUrls.push(currentStreamUrl);
+         currentStreamUrl = next;
+         audioPlayer.src = next;
+         currentStreamInfo = parseStreamInfo(next);
          setStreamState("CONNECTING");
          audioPlayer.play().then(() => {
             playbackStartedAt = Date.now();
@@ -1338,7 +1359,7 @@
             updateStatus();
          }).catch(err => {
             stopPlayback();
-            print("Backup failed.", "c-err");
+            print(`Backup failed: ${err.message}`, "c-err");
             updateStatus();
          });
       });
@@ -1480,15 +1501,14 @@
       if(!hasActivePlayback()) return;
       clearPauseRecoveryTimer();
       const code = audioPlayer.error ? audioPlayer.error.code : 0;
-      const backupUrl = getMp3BackupUrl(currentStation);
-      const canUseMp3Backup = code === 3 && backupUrl && currentStreamUrl !== backupUrl;
 
       if(reconnectInFlight) {
         scheduleReconnect(`media error ${code || ""}`.trim());
         return;
       }
 
-      if(!canUseMp3Backup) {
+      const next = (code === 3 || code === 4) ? nextStreamUrl(currentStation) : "";
+      if(!next) {
         reconnectAttempts += 1;
         scheduleReconnect(`media error ${code || ""}`.trim(), 800);
         return;
@@ -1496,15 +1516,16 @@
 
       reconnectInFlight = true;
       setStreamState("CONNECTING");
-      logAudioDebug("fallback:mp3");
-      print("Signal decode error. Switching to MP3 backup...", "c-dim");
+      logAudioDebug(`fallback:${next}`);
+      print(`Signal decode error. Trying alternate freq: ${next}`, "c-dim");
 
-      currentStreamUrl = backupUrl;
-      currentStreamInfo = parseStreamInfo(backupUrl);
+      triedStreamUrls.push(currentStreamUrl);
+      currentStreamUrl = next;
+      currentStreamInfo = parseStreamInfo(next);
       suppressPauseRecovery = true;
       audioPlayer.pause();
       if(hls) { hls.destroy(); hls = null; }
-      audioPlayer.src = cacheBustUrl(backupUrl);
+      audioPlayer.src = cacheBustUrl(next);
       audioPlayer.volume = volume;
       audioPlayer.muted = isMuted;
       audioPlayer.load();
