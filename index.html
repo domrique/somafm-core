@@ -515,6 +515,7 @@
     let lastTrackPrinted = "";
     let pauseRecoveryTimer = null;
     let autoScrollOutput = true;
+    let holdScroll = false;
     let tvFocusIndex = -1;
 
     // --- AUDIO VISUALIZER STATE ---
@@ -564,7 +565,7 @@
       div.className = `line ${cssClass}`.trim();
       div.innerHTML = html;
       outputDiv.appendChild(div);
-      if(autoScrollOutput) scrollToBottom();
+      if(autoScrollOutput && !holdScroll) scrollToBottom();
     }
 
     function escapeHtml(s){
@@ -1022,6 +1023,7 @@
       const cmd = inputField.value;
       inputField.value = "";
       typedDisplay.innerText = "";
+      holdScroll = false;
       printPromptLog(cmd);
       handleCommand(cmd, false);
       scrollToBottom();
@@ -1272,6 +1274,7 @@
     async function playStation(idx){
       const st = stations[idx];
       if(!st) return;
+      holdScroll = true;
 
       if(hasActivePlayback()) stopPlayback({ keepStatus: true });
       
