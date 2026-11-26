@@ -139,6 +139,42 @@ Record Rap Classics is 2Pac/50 Cent mainstream; Tower Town and laut.fm
 hiphop are German rap; WHHC plays current hits; Badrock "Golden Era"
 actually played Italo-disco.
 
+### Added 2026-11-27 (classical, latin, africa, house, dubstep, turntablism, doom)
+
+One new section (`classical`); everything else extends the existing groups so
+the list does not fragment: house goes to `psy / techno / club`, dubstep /
+dancehall / ska to `dnb / jungle / bass`, turntablism to `hip-hop / lo-fi / beats`,
+doom/stoner and extreme metal to `metal / punk`, and smooth jazz, bossa, cumbia,
+highlife, afrobeat-jazz and amapiano to `jazz / funk / soul / roots` (renamed).
+
+| Station | Genre | URL | Note |
+| --- | --- | --- | --- |
+| Radio Swiss Classic | classical | `https://stream.srg-ssr.ch/srgssr/rsc_de/aac/192` | SRG, no ads |
+| Radio Classique | classical | `https://radioclassique.ice.infomaniak.ch/radioclassique-high.mp3` | Paris concert staples |
+| WQXR Q2 | contemporary-classical | `https://q2stream.wqxr.org/q2.aac` | NYPR avant-garde stream |
+| Radio Orpheus | classical | `https://orfeyfm.hostingradio.ru:8034/orfeyfm128.mp3` | Moscow opera/symphonic |
+| Suite Jazz Radio | smooth-jazz | `https://jenny.torontocast.com:2000/stream/suitejazzradio` | Art Farmer-class warmth |
+| Radio Monte Carlo Bossa | bossa | `https://mc-mcbossa.hostingradio.ru/mcbossa96.aacp` | Brazilian lounge |
+| Cumbia Total | cumbia | `https://playerservices.streamtheworld.com/api/livestream-redirect/ACIR40_S01AAC.aac` | Colombian cumbia |
+| Ahenfie FM | highlife | `https://radio.localstreamgh.com/listen/ahenfie_radio_/radio.mp3` | Accra, Twi-language |
+| Afrobeats Jazz Radio | afrobeat-jazz | `https://radio.nitro-server.uk/listen/frobeatsazzadio/radio.mp3` | fallback mount `frobeatsisingadio` |
+| Soweto Underground | amapiano | `https://radio.d3kani.com/listen/soweto_underground/radio.mp3` | log drums, Soweto |
+| Classic House Music | house | `https://classichousemusic.ca/listen/classic_house_music/radio.mp3` | 1987 club mixes |
+| CHICAGO HOUSE | chicago-house | `https://stream.radio.co/sae989fe39/listen` | Tyree Cooper / Trax lineage |
+| 313live | detroit-techno | `https://a9.asurahosting.com/listen/3_1_3_live.org/radio.mp3` | Detroit 313 |
+| 24Dubstep DropZone | dubstep | `https://stream.24dubstep.pl/radio/8000/mp3_normal` | Polish 140 pressure |
+| Sensimedia Dancehall | dancehall | `https://sensidancehall.radioca.st/;` | Sensi family |
+| Générations Dancehall | dancehall | `https://generations-dancehall.ice.infomaniak.ch/generations-dancehall.aac` | French channel |
+| Tonic Ska Radio | ska | `https://eu10.fastcast4u.com/tonicska` | Madness / 2 Tone |
+| ScratchVision Radio | turntablism | `https://stream.radio.co/saacde1bcb/low` | Gang Starr, cuts |
+| Gritty Rock Radio | stoner | `https://listen.radioking.com/radio/10713/stream/224413` | stoner/doom riffs |
+| Bandung Death Metal Syndicate | black-metal | `https://stream.zeno.fm/t9wdzppre5zuv` | extreme metal |
+
+Rejected after listening: Dead Moon (plays liquid DnB), Ruffneck Smille (roots
+reggae + laut.fm ads), Doom Stew (metadata stuck on one joke track), Scratch
+Radio (same), MyDoom-666 (euro-trance), Radio BOB Ska/Stoner (no metadata to
+verify). Asia was intentionally skipped.
+
 ### Stream health automation
 
 `scripts/check-streams.js` (`npm run check:streams`) probes every URL in
