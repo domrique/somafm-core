@@ -43,6 +43,7 @@ These were added for debugging and removed after user testing.
 | NTS Radio 1 | `https://stream-relay-geo.ntslive.net/stream?client=direct` | removed by user field list |
 | NTS Radio 2 | `https://stream-relay-geo.ntslive.net/stream2?client=direct` | removed by user field list |
 | Sleepbot Broadcast | `https://sleepbot.streamguys1.com/botb.mp3` | removed by user field list |
+| Skyrock Klassiks | `https://icecast.skyrock.net/s/klassiks_aac_64k` | French rap oldies; does not fit the collection, removed on request (2026-11-27) |
 
 ## Russian / RU-Origin Candidates
 
@@ -193,6 +194,19 @@ Music only, but the free Radio Art tier injects an occasional "Upgrade to
 Premium" line into the metadata/ads. No Max Richter or Nils Frahm channel
 exists on Radio Art (`fMax_richter`, `fNils_frahm` are 404); the closest
 "Positively Sleep Max Richter" stream is a sleep channel, not a radio station.
+
+### Classic rock and psybreaks added 2026-11-27
+
+| Station | Genre | URL | Note |
+| --- | --- | --- | --- |
+| Planet Rock | classic-rock | `https://stream.rcs.revma.com/w66qp4pp81uvv` | UK classic rock; the hellorayo URL is geo/moved, the RCS relay works. Verified: Allman Brothers "Jessica". |
+| Exclusively Led Zeppelin | classic-rock | `https://streaming.exclusive.radio/er-app/ledzeppelin/icecast.audio` | Zeppelin only, verified. Same network has Pink Floyd / Deep Purple / Queen mounts if wanted later. |
+| Radio Boga | psybreaks | `https://radio.radiodjboga.online/stream` | The VK community's own stream (`radio.radiodjboga.online`), found on radiodjboga.online. |
+
+`metal / punk` was renamed `rock / metal / punk` since classic rock now lives
+there. A dedicated 24/7 psybass stream does not exist in the public
+directories we checked (radio-browser, internet-radio); PsyRadio/DMT FM are
+psytrance, so Boga is the only psybreaks/psybass entry for now.
 
 ### Stream health automation
 

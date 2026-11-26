@@ -404,6 +404,7 @@
       ext("classic-house-music", "Classic House Music", "house", "Classic house: 1987 club mixes and Chicago roots.", "https://classichousemusic.ca/listen/classic_house_music/radio.mp3"),
       ext("chicago-house", "CHICAGO HOUSE", "chicago-house", "Chicago house history: Tyree Cooper and the Trax lineage.", "https://stream.radio.co/sae989fe39/listen"),
       ext("313live", "313live", "detroit-techno", "Detroit techno from the 313: machine soul and Motor City pressure.", "https://a9.asurahosting.com/listen/3_1_3_live.org/radio.mp3"),
+      ext("radio-boga", "Radio Boga", "psybreaks", "Psybreaks and psybass from the VK community: broken beats, psy leads.", "https://radio.radiodjboga.online/stream"),
 
       // --- selector / community ---
       ext("dublab", "dublab", "eclectic", "Los Angeles transmission for future roots, odd pop and deep selectors.", "https://dublab.out.airtime.pro/dublab_a"),
@@ -437,7 +438,6 @@
       ext("soweto-underground", "Soweto Underground", "amapiano", "Amapiano from Soweto: log drums and deep house bones.", "https://radio.d3kani.com/listen/soweto_underground/radio.mp3"),
 
       // --- hip-hop / lo-fi / beats ---
-      ext("skyrock-klassiks", "Skyrock Klassiks", "hip-hop", "French classics signal for hip-hop and rap oldies.", "https://icecast.skyrock.net/s/klassiks_aac_64k"),
       ext("kfrp", "KFRP Radio", "underground-rap", "Underground hip-hop, horrorcore and dark instrumentals from Lincoln.", "https://radio.kfrp.live/listen/kfrp_radio/radio.mp3"),
       ext("radio-acid", "Radio ACID", "chillhop", "Chill grooves with g-funk edges: chillhop, funk and smooth electronics.", "https://stream.radioacid.com/stream"),
       ext("record-lo-fi", "Record Lo-Fi", "chillhop", "Lo-fi hip-hop and jazzhop beats from the Russian radio machine.", "https://radiorecord.hostingradio.ru/lofi96.aacp"),
@@ -490,6 +490,8 @@
       ext("metal-devastation", "Metal Devastation", "metal", "Heavy metal without the gloss, aimed straight at the distortion pedals.", "https://c13.radioboss.fm:18099/stream"),
       ext("gritty-rock", "Gritty Rock Radio", "stoner", "Stoner rock and doom riffage: Egypt, fuzz and slow burn.", "https://listen.radioking.com/radio/10713/stream/224413"),
       ext("bandung-dm", "Bandung Death Metal Syndicate", "black-metal", "Extreme metal from Bandung: death and black metal underground.", "https://stream.zeno.fm/t9wdzppre5zuv"),
+      ext("planet-rock", "Planet Rock", "classic-rock", "UK classic rock institution: Zeppelin, Floyd and long guitar solos.", "https://stream.rcs.revma.com/w66qp4pp81uvv"),
+      ext("led-zeppelin", "Exclusively Led Zeppelin", "classic-rock", "Led Zeppelin only: album cuts, deep tracks and live takes, 24/7.", "https://streaming.exclusive.radio/er-app/ledzeppelin/icecast.audio"),
 
       // --- russian / русская волна ---
       ext("ru-anon-fm", "Radio Anonymous", "russian", "Independent Russian signal: fresh indie, underground and odd waves.", "https://icecast.anon.fm/radio"),
@@ -512,14 +514,14 @@
     const EXTERNAL_GROUPS = [
       { label: "radio paradise", test: (id, g) => id.startsWith("radio-paradise") },
       { label: "dnb / jungle / bass", test: (id, g) => ["dnb", "jungle", "bass", "grime", "liquid-dnb", "atmospheric-dnb", "dubstep"].includes(g) },
-      { label: "psy / techno / club", test: (id, g) => id.startsWith("hirschmilch") || ["psytrance", "progressive", "prog-house", "techno", "dub-techno", "electro", "electronic", "house", "deep-house", "chicago-house", "detroit-techno"].includes(g) },
+      { label: "psy / techno / club", test: (id, g) => id.startsWith("hirschmilch") || ["psytrance", "progressive", "prog-house", "techno", "dub-techno", "electro", "electronic", "house", "deep-house", "chicago-house", "detroit-techno", "psybreaks", "psybass", "breaks"].includes(g) },
       { label: "selector / community", test: (id, g) => ["eclectic", "community", "beats", "leftfield", "global", "chillout"].includes(g) },
       { label: "jazz / funk / soul / roots", test: (id, g) => ["jazz", "funk", "soul", "jazz-funk", "bebop", "smooth-jazz", "free-jazz", "spiritual-jazz", "fusion", "afrobeat", "afrobeat-jazz", "highlife", "ethio-jazz", "amapiano", "cumbia", "bossa", "mpb", "salsa", "latin", "latin-jazz"].includes(g) },
       { label: "hip-hop / lo-fi / beats", test: (id, g) => ["hip-hop", "rap", "underground-rap", "chillhop", "lofi", "lo-fi", "beats", "jazz-hop", "boombap", "vaporwave", "turntablism", "beat-tape", "instrumental-hip-hop", "scratch"].includes(g) },
       { label: "classical", test: (id, g) => ["classical", "opera", "baroque", "early-music", "contemporary-classical", "neoclassical", "chamber"].includes(g) },
       { label: "freeform / college / radio-art", test: (id, g) => ["college", "freeform", "indie-rock", "indie-punk", "experimental"].includes(g) },
       { label: "reggae / dub / roots", test: (id, g) => ["roots-reggae", "reggae", "dancehall", "ska", "rocksteady", "dub", "soundsystem"].includes(g) },
-      { label: "metal / punk", test: (id, g) => ["metal", "punk", "post-punk", "doom", "stoner", "sludge", "black-metal", "death-metal", "experimental-metal", "post-metal"].includes(g) },
+      { label: "rock / metal / punk", test: (id, g) => ["metal", "punk", "post-punk", "doom", "stoner", "sludge", "black-metal", "death-metal", "experimental-metal", "post-metal", "classic-rock", "hard-rock"].includes(g) },
       { label: "russian / русская волна", test: (id, g) => id.startsWith("ru-") }
     ];
 
