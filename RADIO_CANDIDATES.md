@@ -142,8 +142,9 @@ actually played Italo-disco.
 ### Added 2026-11-27 (classical, latin, africa, house, dubstep, turntablism, doom)
 
 One new section (`classical`); everything else extends the existing groups so
-the list does not fragment: house goes to `psy / techno / club`, dubstep /
-dancehall / ska to `dnb / jungle / bass`, turntablism to `hip-hop / lo-fi / beats`,
+the list does not fragment: house goes to `psy / techno / club`, dubstep to
+`dnb / jungle / bass`, dancehall and ska to `reggae / dub / roots` (same
+Jamaican lineage as reggae), turntablism to `hip-hop / lo-fi / beats`,
 doom/stoner and extreme metal to `metal / punk`, and smooth jazz, bossa, cumbia,
 highlife, afrobeat-jazz and amapiano to `jazz / funk / soul / roots` (renamed).
 

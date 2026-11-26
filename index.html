@@ -384,11 +384,8 @@
       ext("aaja-radio", "AAJA Radio", "grime", "South London community signal: rap, bass and club music from the AAJA crew.", "https://aaja.radiocult.fm/stream"),
       ext("rinse-france", "Rinse France", "bass", "French outpost of the Rinse family for grime and bass pressure.", "https://radio10.pro-fhi.net/radio/9041/stream"),
 
-      // --- dubstep / dancehall / ska ---
+      // --- dubstep ---
       ext("24dubstep", "24Dubstep DropZone", "dubstep", "Dubstep and 140 pressure from the Polish underground.", "https://stream.24dubstep.pl/radio/8000/mp3_normal"),
-      ext("sensi-dancehall", "Sensimedia Dancehall", "dancehall", "Dancehall from the Sensi family: Tanya Stephens and riddim pressure.", "https://sensidancehall.radioca.st/;"),
-      ext("generations-dancehall", "Générations Dancehall", "dancehall", "French dancehall channel: Cutty Ranks classics and new cuts.", "https://generations-dancehall.ice.infomaniak.ch/generations-dancehall.aac"),
-      ext("tonic-ska", "Tonic Ska Radio", "ska", "Ska and 2 Tone: Madness, Trojan-era horns, rude boy energy.", "https://eu10.fastcast4u.com/tonicska"),
 
       // --- psy / techno / club ---
       ext("hirschmilch-psytrance", "Hirschmilch Psytrance", "psytrance", "Full-throttle psytrance from the German underground feed.", "https://hirschmilch.de:7501/psytrance.mp3"),
@@ -475,6 +472,9 @@
       ext("only-dub", "Only Dub Radio", "roots-reggae", "Dub-only pressure: heavy riddims, versions and bass weight without detours.", "https://puma.streemlion.com:5505/stream"),
       ext("generations-reggae", "Generations Reggae", "roots-reggae", "Reggae and dancehall channel from the French Generations family.", "https://generations-caraibes.ice.infomaniak.ch/generations-caraibes-high.mp3"),
       ext("reggae-181", "181 FM Reggae Roots", "roots-reggae", "Roots and culture signal from the American 181.fm network.", "https://listen.181fm.com/181-reggae_128k.mp3"),
+      ext("sensi-dancehall", "Sensimedia Dancehall", "dancehall", "Dancehall from the Sensi family: Tanya Stephens and riddim pressure.", "https://sensidancehall.radioca.st/;"),
+      ext("generations-dancehall", "Générations Dancehall", "dancehall", "French dancehall channel: Cutty Ranks classics and new cuts.", "https://generations-dancehall.ice.infomaniak.ch/generations-dancehall.aac"),
+      ext("tonic-ska", "Tonic Ska Radio", "ska", "Ska and 2 Tone: Madness, Trojan-era horns, rude boy energy.", "https://eu10.fastcast4u.com/tonicska"),
 
       // --- metal / punk ---
       ext("bigr-80s-metal", "Big R 80s Metal", "metal", "Hair, speed and classic heavy metal from the cassette-era vault.", "https://bigrradio.cdnstream1.com/5186_128"),
@@ -507,14 +507,14 @@
     // --- EXTERNAL GROUPS ---
     const EXTERNAL_GROUPS = [
       { label: "radio paradise", test: (id, g) => id.startsWith("radio-paradise") },
-      { label: "dnb / jungle / bass", test: (id, g) => ["dnb", "jungle", "bass", "grime", "liquid-dnb", "atmospheric-dnb", "dubstep", "dancehall", "ska", "rocksteady", "soundsystem"].includes(g) },
+      { label: "dnb / jungle / bass", test: (id, g) => ["dnb", "jungle", "bass", "grime", "liquid-dnb", "atmospheric-dnb", "dubstep"].includes(g) },
       { label: "psy / techno / club", test: (id, g) => id.startsWith("hirschmilch") || ["psytrance", "progressive", "prog-house", "techno", "dub-techno", "electro", "electronic", "house", "deep-house", "chicago-house", "detroit-techno"].includes(g) },
       { label: "selector / community", test: (id, g) => ["eclectic", "community", "beats", "leftfield", "global", "chillout"].includes(g) },
       { label: "jazz / funk / soul / roots", test: (id, g) => ["jazz", "funk", "soul", "jazz-funk", "bebop", "smooth-jazz", "free-jazz", "spiritual-jazz", "fusion", "afrobeat", "afrobeat-jazz", "highlife", "ethio-jazz", "amapiano", "cumbia", "bossa", "mpb", "salsa", "latin", "latin-jazz"].includes(g) },
       { label: "hip-hop / lo-fi / beats", test: (id, g) => ["hip-hop", "rap", "underground-rap", "chillhop", "lofi", "lo-fi", "beats", "jazz-hop", "boombap", "vaporwave", "turntablism", "beat-tape", "instrumental-hip-hop", "scratch"].includes(g) },
       { label: "classical", test: (id, g) => ["classical", "opera", "baroque", "early-music", "contemporary-classical", "chamber"].includes(g) },
       { label: "freeform / college / radio-art", test: (id, g) => ["college", "freeform", "indie-rock", "indie-punk", "experimental"].includes(g) },
-      { label: "reggae / dub / roots", test: (id, g) => g === "roots-reggae" },
+      { label: "reggae / dub / roots", test: (id, g) => ["roots-reggae", "reggae", "dancehall", "ska", "rocksteady", "dub", "soundsystem"].includes(g) },
       { label: "metal / punk", test: (id, g) => ["metal", "punk", "post-punk", "doom", "stoner", "sludge", "black-metal", "death-metal", "experimental-metal", "post-metal"].includes(g) },
       { label: "russian / русская волна", test: (id, g) => id.startsWith("ru-") }
     ];
