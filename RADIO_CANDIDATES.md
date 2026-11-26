@@ -252,6 +252,24 @@ What exists:
   (groovin.sbs, tagged psybreaks) — connection refused; laut.fm breakbeat
   channels — German ad blocks in the stream.
 
+### Psychill / psybient layer added 2026-11-27
+
+The artists asked about (Slackbaba, Desert Dwellers, Astronaut Ape, Maiia,
+Chronos) live in psychill / psybient / psydub, not psytrance. Verified by
+metadata before adding: RadiOzora played Hataken, Psybient Sunset played
+Tripswitch (Eat Static remix), Paradisehunter played Total Eclipse,
+Pyramid Radio played Detune.
+
+| Station | Genre | URL |
+| --- | --- | --- |
+| DMT FM | psytrance | `https://dc1.serverse.com/proxy/ywycfrxn/stream` |
+| RadiOzora Chill | psychill | `https://chill.out.airtime.pro/chill_a` |
+| Psybient Sunset | psybient | `https://listen.openstream.co/6517/audio` |
+| Paradisehunter Chill | psychill | `https://radio.paradisehunter.de/listen/chillout/radio.mp3` |
+| Pyramid Radio | psybient | `https://a5.asurahosting.com:7540/radio.mp3` |
+
+All five stay inside `psy / techno / club` — no new sections.
+
 ### Stream health automation
 
 `scripts/check-streams.js` (`npm run check:streams`) probes every URL in
