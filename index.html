@@ -455,6 +455,10 @@
       ext("radio-swiss-classic", "Radio Swiss Classic", "classical", "SRG classical: standards, opera and chamber, no ads.", "https://stream.srg-ssr.ch/srgssr/rsc_de/aac/192"),
       ext("radio-classique", "Radio Classique", "classical", "Paris classical: concert hall standards with light commentary.", "https://radioclassique.ice.infomaniak.ch/radioclassique-high.mp3"),
       ext("wqxr-q2", "WQXR Q2", "contemporary-classical", "New York avant-garde and contemporary classical from NYPR.", "https://q2stream.wqxr.org/q2.aac"),
+      ext("radio-art-contemporary", "Radio Art Contemporary", "contemporary-classical", "Contemporary classical: Tavener, Pärt and spiritual minimalism.", "https://live.radioart.com/fContemporary.mp3"),
+      ext("radio-art-ambient-piano", "Radio Art Ambient Piano", "neoclassical", "Ambient piano and modern composition: Vantzou, slow keys, no beat.", "https://live.radioart.com/fAmbient_piano.mp3"),
+      ext("radio-art-einaudi", "Radio Art Einaudi", "neoclassical", "Einaudi channel: piano cycles, strings and filmic calm, 24/7.", "https://live.radioart.com/fLudovico_einaudi.mp3"),
+      ext("whisperings", "Whisperings Solo Piano", "neoclassical", "Solo piano channel: neoclassical originals and Bach arrangements.", "https://pianosolo.streamguys1.com/live"),
       ext("radio-orpheus", "Radio Orpheus", "classical", "Moscow classical voice: opera, symphonic and chamber music.", "https://orfeyfm.hostingradio.ru:8034/orfeyfm128.mp3"),
 
       // --- freeform / college / radio-art ---
@@ -512,7 +516,7 @@
       { label: "selector / community", test: (id, g) => ["eclectic", "community", "beats", "leftfield", "global", "chillout"].includes(g) },
       { label: "jazz / funk / soul / roots", test: (id, g) => ["jazz", "funk", "soul", "jazz-funk", "bebop", "smooth-jazz", "free-jazz", "spiritual-jazz", "fusion", "afrobeat", "afrobeat-jazz", "highlife", "ethio-jazz", "amapiano", "cumbia", "bossa", "mpb", "salsa", "latin", "latin-jazz"].includes(g) },
       { label: "hip-hop / lo-fi / beats", test: (id, g) => ["hip-hop", "rap", "underground-rap", "chillhop", "lofi", "lo-fi", "beats", "jazz-hop", "boombap", "vaporwave", "turntablism", "beat-tape", "instrumental-hip-hop", "scratch"].includes(g) },
-      { label: "classical", test: (id, g) => ["classical", "opera", "baroque", "early-music", "contemporary-classical", "chamber"].includes(g) },
+      { label: "classical", test: (id, g) => ["classical", "opera", "baroque", "early-music", "contemporary-classical", "neoclassical", "chamber"].includes(g) },
       { label: "freeform / college / radio-art", test: (id, g) => ["college", "freeform", "indie-rock", "indie-punk", "experimental"].includes(g) },
       { label: "reggae / dub / roots", test: (id, g) => ["roots-reggae", "reggae", "dancehall", "ska", "rocksteady", "dub", "soundsystem"].includes(g) },
       { label: "metal / punk", test: (id, g) => ["metal", "punk", "post-punk", "doom", "stoner", "sludge", "black-metal", "death-metal", "experimental-metal", "post-metal"].includes(g) },

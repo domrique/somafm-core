@@ -176,6 +176,24 @@ reggae + laut.fm ads), Doom Stew (metadata stuck on one joke track), Scratch
 Radio (same), MyDoom-666 (euro-trance), Radio BOB Ska/Stoner (no metadata to
 verify). Asia was intentionally skipped.
 
+### Neoclassical added 2026-11-27
+
+Max Richter / Library Tapes territory, verified by ICY metadata before adding:
+Radio Art's Ambient Piano played Christina Vantzou, Contemporary played Tavener,
+Einaudi played Einaudi, Whisperings played a Bach arrangement for solo piano.
+
+| Station | Genre | URL |
+| --- | --- | --- |
+| Radio Art Contemporary | contemporary-classical | `https://live.radioart.com/fContemporary.mp3` |
+| Radio Art Ambient Piano | neoclassical | `https://live.radioart.com/fAmbient_piano.mp3` |
+| Radio Art Einaudi | neoclassical | `https://live.radioart.com/fLudovico_einaudi.mp3` |
+| Whisperings Solo Piano | neoclassical | `https://pianosolo.streamguys1.com/live` |
+
+Music only, but the free Radio Art tier injects an occasional "Upgrade to
+Premium" line into the metadata/ads. No Max Richter or Nils Frahm channel
+exists on Radio Art (`fMax_richter`, `fNils_frahm` are 404); the closest
+"Positively Sleep Max Richter" stream is a sleep channel, not a radio station.
+
 ### Stream health automation
 
 `scripts/check-streams.js` (`npm run check:streams`) probes every URL in
