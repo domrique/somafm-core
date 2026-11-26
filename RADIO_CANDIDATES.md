@@ -201,12 +201,39 @@ exists on Radio Art (`fMax_richter`, `fNils_frahm` are 404); the closest
 | --- | --- | --- | --- |
 | Planet Rock | classic-rock | `https://stream.rcs.revma.com/w66qp4pp81uvv` | UK classic rock; the hellorayo URL is geo/moved, the RCS relay works. Verified: Allman Brothers "Jessica". |
 | Exclusively Led Zeppelin | classic-rock | `https://streaming.exclusive.radio/er-app/ledzeppelin/icecast.audio` | Zeppelin only, verified. Same network has Pink Floyd / Deep Purple / Queen mounts if wanted later. |
-| Radio Boga | psybreaks | `https://radio.radiodjboga.online/stream` | The VK community's own stream (`radio.radiodjboga.online`), found on radiodjboga.online. |
+| Radio Boga | psybreaks | `https://radio.radiodjboga.online/stream` | Removed after the 2026-11-27 content audit: it is a different project (Radio DJ Boga), not the VK `radio_boga` psybreaks/psybass community. |
 
 `metal / punk` was renamed `rock / metal / punk` since classic rock now lives
 there. A dedicated 24/7 psybass stream does not exist in the public
 directories we checked (radio-browser, internet-radio); PsyRadio/DMT FM are
 psytrance, so Boga is the only psybreaks/psybass entry for now.
+
+### Content audit 2026-11-27 (genre vs actual programming)
+
+Sampled ICY metadata for all 118 external stations (three titles each) and
+re-checked every suspicious one a second time. Five real mismatches:
+
+| Station | Label said | Actually played | Fix |
+| --- | --- | --- | --- |
+| 181 FM Reggae Roots | roots-reggae | Ariana Grande, Tate McRae — pop, format flipped | replaced with Reggae.fr (`listen.radioking.com/radio/50473/stream/87415`, mix shows, verified) |
+| 313live | detroit-techno | Tube & Berger, Rampa — tech house | relabelled `house`, description honest |
+| Radio Boga | psybreaks | wrong project, no ICY, user reported off-style | removed |
+| Gritty Rock Radio | stoner | Joe Bonamassa — blues rock | relabelled `blues-rock` |
+| Afrobeats Jazz Radio | afrobeat-jazz | Kabza De Small — amapiano | relabelled `afrobeats` |
+| Radio ACID | chillhop | J.Cole, Lupe Fiasco — chill rap | relabelled `hip-hop` |
+
+Borderline, left as is: FM 80 plays modern nu-disco (description now says
+"classic and modern"), ROCK FM plays the western canon (description fixed),
+Sensimedia Dancehall plays reggae-dancehall crossovers, MC Bossa plays
+electro-swing bossa. AAJA Radio was "Off Air" during the audit — station
+alive, programming paused.
+
+Stations without ICY metadata (FIP family, The Lot, Operator, Cashmere, some
+SomaFM) could not be judged this way; they were verified by their own
+now-playing APIs or left as-is.
+
+Answer to "how many more": 5 of 118 (~4%), plus 3 borderline. The rest of
+the mismatches people hear are usually station promos/IDs, not wrong genres.
 
 ### Stream health automation
 
