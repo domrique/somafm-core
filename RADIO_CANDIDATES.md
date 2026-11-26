@@ -235,6 +235,23 @@ now-playing APIs or left as-is.
 Answer to "how many more": 5 of 118 (~4%), plus 3 borderline. The rest of
 the mismatches people hear are usually station promos/IDs, not wrong genres.
 
+### Psybreaks / psybass search (2026-11-27)
+
+Checked TuneIn OPML, radio.garden, Xiph/Icecast, Shoutcast, myTuner,
+radio-browser and internet-radio: **no 24/7 psybreaks or psybass station
+exists in public directories**. Radio Boga itself is a podcast community
+(VK `radio_boga`, SoundCloud), not a live stream.
+
+What exists:
+- BadBeatRadio `https://misato.ru-hoster.com:8061/badbeatradio` — nu skool
+  breakbeat, the closest live rhythm family; added as genre `breaks`.
+- DMT FM `https://dc1.serverse.com/proxy/ywycfrxn/stream` — psytrance with
+  psybreaks shows, but 24/7 it is psytrance; not added (Hirschmilch already
+  covers the section).
+- Nubreaks (stream1.nubreaks.com) — dead certificate; Groovin
+  (groovin.sbs, tagged psybreaks) — connection refused; laut.fm breakbeat
+  channels — German ad blocks in the stream.
+
 ### Stream health automation
 
 `scripts/check-streams.js` (`npm run check:streams`) probes every URL in
