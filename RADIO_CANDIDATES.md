@@ -72,6 +72,67 @@ Potential additions for a deeper selector-radio feel.
 | KALX Berkeley | college / punk / freeform | `https://stream.kalx.berkeley.edu:8443/kalx-128.mp3` | tested: audio, CORS not explicit |
 | WFMU Freeform | freeform / underground | `https://stream0.wfmu.org/freeform-128k.mp3` | tested: audio, CORS restricted; browser field test needed |
 
+## 2026-11-26 Stream Audit
+
+Full pass over all 101 entries in `EXTENDED_STATIONS` + `EXTRA_STATIONS`.
+Checks: HTTP status, first audio bytes, `Content-Type`, and the
+`Access-Control-Allow-Origin` header for `Origin: https://domrique.github.io`.
+The CORS part matters: `<audio crossorigin="anonymous">` in the app makes
+the browser fetch in CORS mode, so a stream without ACAO fails to load
+(confirmed in a real browser, not just with curl).
+
+### Upgraded from HTTP to HTTPS (mixed content)
+
+| Station | New URL |
+| --- | --- |
+| Generations Reggae | `https://generations-caraibes.ice.infomaniak.ch/generations-caraibes-high.mp3` |
+| 181 FM Reggae Roots | `https://listen.181fm.com/181-reggae_128k.mp3` (old `relay5.181.fm:8096` has no HTTPS) |
+| Retro FM | `https://retroserver.streamr.ru:8043/retro256.mp3` |
+| ROCK FM | `https://nashe1.hostingradio.ru/rock-128.mp3` |
+| Chanson | `https://chanson.hostingradio.ru:8041/chanson128.mp3` |
+| Nashe Radio | `https://nashe1.hostingradio.ru/nashe-128.mp3` |
+| Dorognoe Radio | `https://dorognoe.hostingradio.ru:8000/dorognoe` |
+| Silver Rain | `https://silverrain.hostingradio.ru/silver128.mp3` |
+
+### Replaced (dead, HTTP-only or no CORS)
+
+| Was | Issue | Now |
+| --- | --- | --- |
+| Rinse FM (`admin.stream.rinse.fm`) | Live audio but no ACAO; with `crossorigin` the element errors. No working alternate endpoint found (AzuraCast HLS/public paths all 404). | AAJA Radio `https://aaja.radiocult.fm/stream` |
+| FUNKY RADIO (`funkyradio.streamingmedia.it`) | No ACAO on any mount. | Same network, classic funk channel: `https://my.streamingmedia.it/listen/discofunk/play` |
+| BOX Lofi (`play.streamafrica.net/lofiradio`) | No ACAO (HTTPS answers with a StreamRouter page). | LITT Live Lofi `https://das-sa39.cdnstream1.com/5582_128` |
+| King Dub Radio (`london-dedicated.myautodj.com:8862`) | HTTP only, no TLS on the mount. | Only Dub Radio `https://puma.streemlion.com:5505/stream` |
+| The Lot Radio (`livepeercdn.studio/hls/85c28sa2o8wppm58`) | HLS id expired, 504 from the gateway. | `https://live-test.thelotradio.com/live/index.m3u8` (the URL their site advertises in `og:video`; may change) |
+
+### Added 2026-11-26 (jazz / soul and hip-hop / lo-fi / beats)
+
+Fresh stations for the two thinner sections, all HTTPS + CORS checked in a
+browser with `crossorigin=anonymous` on the Pages origin.
+
+| Station | Genre | URL | Why |
+| --- | --- | --- | --- |
+| FIP Jazz | jazz | `https://icecast.radiofrance.fr/fipjazz-midfi.mp3` | Radio France curation, no ads, deep catalogue. |
+| WWOZ New Orleans | jazz-funk | `https://wwoz-sc.streamguys1.com/wwoz-hi.mp3` | Community station: brass, funk, roots, live sessions. |
+| JFSR Jazz Funk Soul | soul | `https://s2.radio.co/s22ae5a8a6/listen` | 320k UK jazz-funk/soul crate, fits the crate-digging lane. |
+| FIP Hip-Hop | hip-hop | `https://icecast.radiofrance.fr/fiphiphop-midfi.mp3` | Golden era plus new scenes, ad-free public radio. |
+| Pueblo Vista Radio | chillhop | `https://pueblovista.net/listen/pueblo_vista_fm/standard.mp3` | Lofi label radio, real catalogue rather than an aggregator. |
+| Epic Lounge Jazzhop | jazz-hop | `https://stream.epic-lounge.com/jazzhop-lounge` | Fills the jazz-hop / boom-bap gap in the beats section. |
+
+Rejected on the way: Solar Radio (`svr1.msmn.co:8136`) answers curl with
+CORS but fails in the browser; Jazz Radio sub-channels (soul/groove/black
+music) do not resolve; Jazz24 endpoints are dead or time out; the
+radio-browser "jazz"/"soul"/"beats" tags are full of mismatched stations
+(Christmas FM, TikTok Hits) and were not trusted.
+
+### Flaky but alive
+
+WMBR, Radio Jazz and KCHUNG occasionally time out on the first connect
+through the VPN path, then answer normally. No change needed.
+
+Re-check scripts (not in the repo):
+`%TEMP%\opencode\soma-tests\probe.js` (all stations from `index.html`)
+and `check.js` + `targets.json` (arbitrary candidate URLs).
+
 ## Ideas To Revisit
 
 | Station | Why |
