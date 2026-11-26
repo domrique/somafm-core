@@ -63,6 +63,18 @@ dist/android/SomaFMCore-player-release.apk
 
 More details are in [ANDROID.md](ANDROID.md).
 
+## Stream Health
+
+Every station URL is probed for HTTPS, audio bytes and CORS headers, because
+the player uses `<audio crossorigin="anonymous">`:
+
+```powershell
+npm run check:streams
+```
+
+`.github/workflows/stream-check.yml` runs the same probe weekly and opens an
+issue when a station goes dark.
+
 ## Controls
 
 You can use the bottom bar, click a station, use keyboard / D-pad, or type commands into the terminal prompt.

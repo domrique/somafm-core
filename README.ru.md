@@ -63,6 +63,18 @@ dist/android/SomaFMCore-player-release.apk
 
 Подробности: [ANDROID.md](ANDROID.md).
 
+## Проверка потоков
+
+Каждый URL станции проверяется на HTTPS, аудиобайты и заголовки CORS — плеер
+использует `<audio crossorigin="anonymous">`:
+
+```powershell
+npm run check:streams
+```
+
+`.github/workflows/stream-check.yml` запускает ту же проверку раз в неделю и
+открывает issue, если станция перестала отвечать.
+
 ## Управление
 
 Можно пользоваться нижней панелью, кликать станции, использовать клавиатуру / D-pad или вводить команды в терминальную строку.

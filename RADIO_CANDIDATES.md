@@ -124,12 +124,39 @@ music) do not resolve; Jazz24 endpoints are dead or time out; the
 radio-browser "jazz"/"soul"/"beats" tags are full of mismatched stations
 (Christmas FM, TikTok Hits) and were not trusted.
 
+### Added 2026-11-26 (classic rap, soul, dub techno, community)
+
+| Station | Section | URL | Why |
+| --- | --- | --- | --- |
+| Sensi Hip Hop | hip-hop | `https://sensihiphop.radioca.st/stream` | UK boom-bap: KRS-One, El Da Sensei, backpack lane. |
+| WEFUNK Radio | hip-hop | `https://s-14.wefunkradio.com:8443/wefunk64.mp3` | Montreal crate institution: funk 45s + golden-era rap in DJ sets. 64 kbps. |
+| Starpoint Radio | soul | `https://stream2.hippynet.co.uk/stream/starpointradiohigh` | London soul, disco and boogie, 192 kbps. |
+| Deep Dub Tech Radio | dub-techno | `https://listen5.myradio24.com/ddtradio` | Dub techno / deep techno pressure, 320 kbps. |
+| Radio Alhara | community | `https://stream.radioalhara.net/ra` | Ramallah community radio, leftfield sound and field recordings. |
+
+Rejected: Hotmix Classic Rap has the right curation but no CORS;
+Record Rap Classics is 2Pac/50 Cent mainstream; Tower Town and laut.fm
+hiphop are German rap; WHHC plays current hits; Badrock "Golden Era"
+actually played Italo-disco.
+
+### Stream health automation
+
+`scripts/check-streams.js` (`npm run check:streams`) probes every URL in
+`index.html` for HTTPS, audio bytes and CORS, retries flaky hosts three
+times and exits non-zero when something is broken. The
+`Stream Check` workflow runs it every Monday and opens or updates a
+`Stream check failed` issue.
+
+External stations can now carry `fallbackUrls: []` in `ext(...)`; the
+player rotates through them on decode errors and reconnect attempts the
+same way it already did for the SomaFM URL ladder.
+
 ### Flaky but alive
 
 WMBR, Radio Jazz and KCHUNG occasionally time out on the first connect
 through the VPN path, then answer normally. No change needed.
 
-Re-check scripts (not in the repo):
+Ad-hoc probing scripts (not in the repo):
 `%TEMP%\opencode\soma-tests\probe.js` (all stations from `index.html`)
 and `check.js` + `targets.json` (arbitrary candidate URLs).
 

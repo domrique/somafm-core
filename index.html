@@ -349,13 +349,14 @@
       { id:"thistle",        name:"ThistleRadio",    streamUrl:"https://ice2.somafm.com/thistle-128-aac" }
     ];
 
-    const ext = (id, name, genre, description, streamUrl) => ({
+    const ext = (id, name, genre, description, streamUrl, fallbackUrls = []) => ({
       id,
       name,
       genre,
       description,
       source:"external",
-      streamUrl
+      streamUrl,
+      fallbackUrls
     });
 
     // External radio policy: keep HTTPS streams that fit the underground terminal
@@ -363,13 +364,13 @@
     const EXTRA_STATIONS = [
 
       // --- radio paradise ---
-      ext("radio-paradise-main", "Radio Paradise Main", "eclectic", "Human-sequenced rock, electronic and global cuts without ads.", "https://stream.radioparadise.com/aac-128"),
-      ext("radio-paradise-rock", "Radio Paradise Rock", "rock", "Deep rock mix: classic weight, modern edges and long arcs.", "https://stream.radioparadise.com/rock-128"),
-      ext("radio-paradise-mellow", "Radio Paradise Mellow", "mellow", "Slow-burn guitars, electronic shade and softer deep cuts.", "https://stream.radioparadise.com/mellow-128"),
-      ext("radio-paradise-global", "Radio Paradise Global", "global", "Worldwide grooves, folk fragments and border-crossing records.", "https://stream.radioparadise.com/global-128"),
+      ext("radio-paradise-main", "Radio Paradise Main", "eclectic", "Human-sequenced rock, electronic and global cuts without ads.", "https://stream.radioparadise.com/aac-128", ["https://stream-uk1.radioparadise.com/aac-128"]),
+      ext("radio-paradise-rock", "Radio Paradise Rock", "rock", "Deep rock mix: classic weight, modern edges and long arcs.", "https://stream.radioparadise.com/rock-128", ["https://stream-uk1.radioparadise.com/rock-128"]),
+      ext("radio-paradise-mellow", "Radio Paradise Mellow", "mellow", "Slow-burn guitars, electronic shade and softer deep cuts.", "https://stream.radioparadise.com/mellow-128", ["https://stream-uk1.radioparadise.com/mellow-128"]),
+      ext("radio-paradise-global", "Radio Paradise Global", "global", "Worldwide grooves, folk fragments and border-crossing records.", "https://stream.radioparadise.com/global-128", ["https://stream-uk1.radioparadise.com/global-128"]),
 
       // --- dnb / jungle / bass ---
-      ext("bassdrive", "Bassdrive", "dnb", "Long-running Drum and Bass signal for jungle heads and night coders.", "https://ice.bassdrive.net/stream"),
+      ext("bassdrive", "Bassdrive", "dnb", "Long-running Drum and Bass signal for jungle heads and night coders.", "https://ice.bassdrive.net/stream", ["https://bassdrive.radioca.st/stream"]),
       ext("full-spectrum-radio", "Full Spectrum Radio", "dnb", "Drum and bass, jungle and bass pressure from the sharper end.", "https://fullspectrumradio.com:8000/fslisten"),
       ext("uk-bass-radio", "UK Bass Radio", "bass", "UK bass, garage, jungle and underground pressure for system tests.", "https://s2.ssl-stream.com/listen/uk_bass_radio/stream"),
       ext("dnbradio-fw", "DNBRadio FW", "dnb", "Alternate DNBRadio feed for field testing the low-end path.", "https://fw.dnbradio.com/dnbradio_main.mp3"),
@@ -390,6 +391,7 @@
       ext("hirschmilch-electronic", "Hirschmilch Electronic", "electronic", "Clean electronic cuts from melodic to club-adjacent.", "https://hirschmilch.de:7501/electronic.mp3"),
       ext("hirschmilch-techno", "Hirschmilch Techno", "techno", "Straight machine rhythm from the Hirschmilch bunker.", "https://hirschmilch.de:7501/techno.mp3"),
       ext("hirschmilch-chillout", "Hirschmilch Chillout", "chillout", "Downtempo psy-flavored decompression after the tunnel.", "https://hirschmilch.de:7501/chillout.mp3"),
+      ext("deep-dub-tech", "Deep Dub Tech Radio", "dub-techno", "Dub techno and deep techno pressure: cavernous chords and slow pulse.", "https://listen5.myradio24.com/ddtradio"),
       ext("igfm-main", "Intergalactic FM", "electro", "Cyberpunk, Italo-disco and raw electro from The Hague.", "https://radio.intergalactic.fm/1"),
       ext("the-lot-radio", "The Lot Radio", "electronic", "Brooklyn booth energy: live DJs, dance music and street-level sets.", "https://live-test.thelotradio.com/live/index.m3u8"),
       ext("operator-radio", "Operator Radio", "electronic", "Rotterdam frequency for DJs, electronic music and local culture.", "https://origin.streamnerd.nl/operator/operator/icecast.audio"),
@@ -403,8 +405,9 @@
       ext("doyouworld", "Do!!You!!!World", "beats", "London oddball radio for beats, dubwise edits and outsider selection.", "https://doyouworld.out.airtime.pro/doyouworld_a"),
       ext("refuge-worldwide", "Refuge Worldwide", "community", "Berlin community radio candidate kept for on-device signal checks.", "https://streaming.radio.co/s3699c5e49/listen"),
       ext("lyl-radio", "LYL Radio", "eclectic", "French independent radio candidate for obscure global soundscapes.", "https://icecast.lyl.live/live"),
-      ext("fip-radio", "FIP Radio", "eclectic", "Ad-free Paris selector flow candidate with broad human curation.", "https://icecast.radiofrance.fr/fip-midfi.mp3"),
+      ext("fip-radio", "FIP Radio", "eclectic", "Ad-free Paris selector flow candidate with broad human curation.", "https://icecast.radiofrance.fr/fip-midfi.mp3", ["https://icecast.radiofrance.fr/fip-hifi.aac"]),
       ext("worldwide-fm", "Worldwide FM", "eclectic", "Gilles Peterson's global selector flow with a broad human touch.", "https://worldwide-fm.radiocult.fm/stream"),
+      ext("radio-alhara", "Radio Alhara", "community", "Ramallah community radio: field recordings, odd pop and leftfield sound.", "https://stream.radioalhara.net/ra"),
 
       // --- jazz / funk / soul ---
       ext("tsf-jazz", "TSF Jazz", "jazz", "Paris jazz signal: standards, bebop, soulful swings and late-night horns.", "https://tsfjazz.ice.infomaniak.ch/tsfjazz-high.mp3"),
@@ -412,9 +415,10 @@
       ext("jazz-radio", "Jazz Radio", "jazz", "French jazz network mixing swing, bossa and acid jazz flavors.", "https://jazzradio.ice.infomaniak.ch/jazzradio-high.mp3"),
       ext("funky-radio", "FUNKY RADIO", "funk", "60s-70s funk and soul, classic crate-digging lane from the Italian studio.", "https://my.streamingmedia.it/listen/discofunk/play"),
       ext("fm80-funky", "FM 80 Funky Music", "funk", "80s disco, funk and soul gloss for the weekend terminal.", "https://listen.radioking.com/radio/467555/stream/523739"),
-      ext("fip-jazz", "FIP Jazz", "jazz", "Paris deep jazz: bop, spiritual, modern edges and no ads.", "https://icecast.radiofrance.fr/fipjazz-midfi.mp3"),
+      ext("fip-jazz", "FIP Jazz", "jazz", "Paris deep jazz: bop, spiritual, modern edges and no ads.", "https://icecast.radiofrance.fr/fipjazz-midfi.mp3", ["https://icecast.radiofrance.fr/fipjazz-hifi.aac"]),
       ext("wwoz", "WWOZ New Orleans", "jazz-funk", "New Orleans community signal: brass, funk, roots and live sessions.", "https://wwoz-sc.streamguys1.com/wwoz-hi.mp3"),
       ext("jfsr", "JFSR Jazz Funk Soul", "soul", "UK jazz-funk and soul crate: rare grooves and mellow pressure.", "https://s2.radio.co/s22ae5a8a6/listen"),
+      ext("starpoint", "Starpoint Radio", "soul", "London soul, disco and boogie from the pirate-era crate.", "https://stream2.hippynet.co.uk/stream/starpointradiohigh"),
 
       // --- hip-hop / lo-fi / beats ---
       ext("skyrock-klassiks", "Skyrock Klassiks", "hip-hop", "French classics signal for hip-hop and rap oldies.", "https://icecast.skyrock.net/s/klassiks_aac_64k"),
@@ -427,6 +431,8 @@
       ext("fip-hip-hop", "FIP Hip-Hop", "hip-hop", "French public radio hip-hop: golden era classics and new scenes, no ads.", "https://icecast.radiofrance.fr/fiphiphop-midfi.mp3"),
       ext("pueblo-vista", "Pueblo Vista Radio", "chillhop", "Lofi label radio: dusty loops, jazzy chords and bedroom warmth.", "https://pueblovista.net/listen/pueblo_vista_fm/standard.mp3"),
       ext("epic-lounge-jazzhop", "Epic Lounge Jazzhop", "jazz-hop", "Jazz-hop lounge: mellow keys and a boom-bap pulse for late terminals.", "https://stream.epic-lounge.com/jazzhop-lounge"),
+      ext("sensihiphop", "Sensi Hip Hop", "hip-hop", "UK boom-bap and backpack rap: KRS-One, El Da Sensei and dusty 90s weight.", "https://sensihiphop.radioca.st/stream"),
+      ext("wefunk", "WEFUNK Radio", "hip-hop", "Montreal crate-digging institution: funk 45s and golden-era rap inside DJ sets.", "https://s-14.wefunkradio.com:8443/wefunk64.mp3"),
 
       // --- freeform / college / radio-art ---
       ext("resonance-fm", "Resonance FM", "experimental", "London community radio for experimental sound and art.", "https://stream.resonance.fm/resonance"),
@@ -438,7 +444,7 @@
       ext("kchung", "KCHUNG", "freeform", "Los Angeles freeform collective radio with punk and odd transmissions.", "https://kchung-radio-01e54a81.radiocult.fm/stream"),
 
       // --- reggae / dub / roots ---
-      ext("roots-legacy", "Roots Legacy", "roots-reggae", "French roots, dub and reggae candidate with a stubborn signal.", "https://l.rootslegacy.fr/;"),
+      ext("roots-legacy", "Roots Legacy", "roots-reggae", "French roots, dub and reggae candidate with a stubborn signal.", "https://l.rootslegacy.fr/;", ["https://l.rootslegacy.fr/stream/1/"]),
       ext("roots-legacy-alt", "Roots Legacy Alt", "roots-reggae", "Alternate Roots Legacy endpoint for real-device checks.", "https://l.rootslegacy.fr/stream/1/"),
       ext("only-dub", "Only Dub Radio", "roots-reggae", "Dub-only pressure: heavy riddims, versions and bass weight without detours.", "https://puma.streemlion.com:5505/stream"),
       ext("generations-reggae", "Generations Reggae", "roots-reggae", "Reggae and dancehall channel from the French Generations family.", "https://generations-caraibes.ice.infomaniak.ch/generations-caraibes-high.mp3"),
@@ -474,7 +480,7 @@
     const EXTERNAL_GROUPS = [
       { label: "radio paradise", test: (id, g) => id.startsWith("radio-paradise") },
       { label: "dnb / jungle / bass", test: (id, g) => ["dnb", "jungle", "bass", "grime", "liquid-dnb", "atmospheric-dnb"].includes(g) },
-      { label: "psy / techno / club", test: (id, g) => id.startsWith("hirschmilch") || ["psytrance", "progressive", "prog-house", "techno", "electro", "electronic"].includes(g) },
+      { label: "psy / techno / club", test: (id, g) => id.startsWith("hirschmilch") || ["psytrance", "progressive", "prog-house", "techno", "dub-techno", "electro", "electronic"].includes(g) },
       { label: "selector / community", test: (id, g) => ["eclectic", "community", "beats", "leftfield", "global", "chillout"].includes(g) },
       { label: "jazz / funk / soul", test: (id, g) => ["jazz", "funk", "soul", "jazz-funk", "bebop"].includes(g) },
       { label: "hip-hop / lo-fi / beats", test: (id, g) => ["hip-hop", "rap", "underground-rap", "chillhop", "lofi", "lo-fi", "beats", "jazz-hop", "boombap", "vaporwave"].includes(g) },
@@ -772,7 +778,19 @@
 
     function getReconnectUrl(){
       if(!currentStreamUrl) return "";
-      if(currentStation && currentStation.source === "external") return currentStreamUrl;
+      if(currentStation && currentStation.source === "external"){
+        if(reconnectAttempts > 0){
+          const next = nextStreamUrl(currentStation);
+          if(next){
+            print(`Switching to backup feed: ${escapeHtml(next)}`, "c-dim");
+            triedStreamUrls.push(currentStreamUrl);
+            currentStreamUrl = next;
+            currentStreamInfo = parseStreamInfo(next);
+            updateTelemetry();
+          }
+        }
+        return currentStreamUrl;
+      }
       if(currentStreamUrl.includes(".m3u8")) return currentStreamUrl;
       return cacheBustUrl(currentStreamUrl);
     }
@@ -788,6 +806,10 @@
     }
 
     function nextStreamUrl(st){
+      if(st && st.source === "external"){
+        const ladder = [st.streamUrl, ...(st.fallbackUrls || [])];
+        return ladder.find(u => !triedStreamUrls.includes(u)) || "";
+      }
       const ladder = getSomaUrlLadder(st);
       return ladder.find(u => !triedStreamUrls.includes(u)) || "";
     }
