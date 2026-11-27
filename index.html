@@ -325,6 +325,13 @@
     );
     const SOMA_SONGS_URL = (id) => `https://somafm.com/songs/${encodeURIComponent(id)}.json`;
     const LAST_STATION_KEY = "somafmcore:lastStationId";
+    const STATIONS_SCHEMA = 1;
+    const STATIONS_CACHE_KEY = "somafmcore:stationsCache";
+    const STATIONS_JSON_URLS = [
+      "https://domrique.github.io/somafm-core/stations.json",
+      "https://raw.githubusercontent.com/domrique/somafm-core/main/stations.json",
+      "https://cdn.jsdelivr.net/gh/domrique/somafm-core@main/stations.json"
+    ];
 
     const EXTENDED_STATIONS = [
       { id:"groovesalad",    name:"Groove Salad",    streamUrl:"https://ice2.somafm.com/groovesalad-128-aac" },
@@ -1222,8 +1229,83 @@
     }
 
     // --- DATA FETCHING ---
-    async function loadStations(){
+    function normalizeExternalStations(list){
+      if(!Array.isArray(list)) return null;
+      const clean = list
+        .filter(st => st && typeof st.id === "string" && st.id && typeof st.name === "string" && st.name && typeof st.streamUrl === "string" && st.streamUrl.startsWith("https://"))
+        .map(st => {
+          const fallbackUrls = Array.isArray(st.fallbackUrls)
+            ? st.fallbackUrls.filter(u => typeof u === "string" && u.startsWith("https://"))
+            : [];
+          return {
+            id: st.id,
+            name: st.name,
+            genre: typeof st.genre === "string" ? st.genre : "",
+            description: typeof st.description === "string" ? st.description : "",
+            source: "external",
+            streamUrl: st.streamUrl,
+            fallbackUrls
+          };
+        });
+      return clean.length >= 20 ? clean : null;
+    }
+
+    function stationPayload(list){
+      return list.map(st => ({
+        id: st.id,
+        name: st.name,
+        genre: st.genre || "",
+        description: st.description || "",
+        streamUrl: st.streamUrl,
+        fallbackUrls: st.fallbackUrls || []
+      }));
+    }
+
+    function restoreStationsCache(){
       try{
+        const raw = localStorage.getItem(STATIONS_CACHE_KEY);
+        if(!raw) return;
+        const data = JSON.parse(raw);
+        if(!data || data.schema !== STATIONS_SCHEMA) return;
+        const list = normalizeExternalStations(data.stations);
+        if(!list) return;
+        EXTRA_STATIONS.length = 0;
+        EXTRA_STATIONS.push(...list);
+      }catch(e){}
+    }
+
+    function applyExternalStations(list, sourceLabel){
+      if(JSON.stringify(stationPayload(list)) === JSON.stringify(stationPayload(EXTRA_STATIONS))) return false;
+      EXTRA_STATIONS.length = 0;
+      EXTRA_STATIONS.push(...list);
+      try{
+        localStorage.setItem(STATIONS_CACHE_KEY, JSON.stringify({ schema: STATIONS_SCHEMA, fetchedAt: Date.now(), stations: stationPayload(list) }));
+      }catch(e){}
+      if(stations.length){
+        stations = stations.filter(st => st.source === "somafm").concat(EXTRA_STATIONS);
+        if(appState === STATELIST) renderList({ focusCurrentStation: false });
+      }
+      print(`External stations refreshed from ${escapeHtml(sourceLabel)} (${list.length}).`, "c-dim");
+      return true;
+    }
+
+    async function refreshStationsFromRemote(){
+      for(const base of STATIONS_JSON_URLS){
+        try{
+          const url = base + (base.includes("?") ? "&" : "?") + "v=" + Date.now();
+          const r = await fetch(url, { cache: "no-store" });
+          if(!r.ok) continue;
+          const data = await r.json();
+          if(!data || data.schema !== STATIONS_SCHEMA) continue;
+          const list = normalizeExternalStations(data.stations);
+          if(!list) continue;
+          applyExternalStations(list, new URL(base).host);
+          return;
+        }catch(e){}
+      }
+    }
+
+    async function loadStations(){      try{
         const controller = new AbortController();
         const id = setTimeout(() => controller.abort(), 3000); 
         
@@ -1782,6 +1864,7 @@
     window.onload = async () => {
       if("scrollRestoration" in history) history.scrollRestoration = "manual";
       autoScrollOutput = false;
+      restoreStationsCache();
       stations = await loadStations();
       print(`Loaded ${stations.length} channels.`);
       renderList();
@@ -1794,6 +1877,7 @@
         autoScrollOutput = true;
       });
       focusCommandInput();
+      refreshStationsFromRemote();
     };
 
     // --- EVENTS ---

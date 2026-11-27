@@ -23,14 +23,33 @@ Do not edit generated copies directly:
 
 They are rebuilt from the root files by `npm run android:sync`.
 
-The APK launcher opens the live PWA URL:
+The APK is a **local WebView app**: it bundles a snapshot of the web build in
+`android/app/src/main/assets/public` and adds a native foreground keep-alive
+service for background audio. It does not load the live page; the snapshot is
+whatever `index.html` looked like when the APK was built.
 
-```text
-https://domrique.github.io/somafm-core/
+## Station list updates without a rebuild
+
+The station list is exported to `stations.json` and the app refreshes it at
+startup:
+
+1. bundled snapshot renders first (works offline);
+2. `stations.json` is fetched from
+   `https://domrique.github.io/somafm-core/stations.json`
+   (fallbacks: raw.githubusercontent.com, jsDelivr);
+3. a valid `schema: 1` payload replaces the external list and is cached in
+   `localStorage` for the next launch.
+
+After editing `EXTRA_STATIONS` in `index.html` run:
+
+```powershell
+npm run stations:export   # writes stations.json
+npm run stations:check    # fails when the JSON is stale
 ```
 
-This avoids Android WebView background-audio sleep issues by letting the system
-browser engine handle playback.
+Commit and push both files. The APK does **not** need a rebuild for station
+additions, removals or URL changes. Rebuild it only when the app code, UI,
+grouping logic, manifest or native parts change.
 
 ## What is included
 

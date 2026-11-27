@@ -1,0 +1,917 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-27T00:51:01.014Z",
+  "count": 126,
+  "stations": [
+    {
+      "id": "radio-paradise-main",
+      "name": "Radio Paradise Main",
+      "genre": "eclectic",
+      "description": "Human-sequenced rock, electronic and global cuts without ads.",
+      "streamUrl": "https://stream.radioparadise.com/aac-128",
+      "fallbackUrls": [
+        "https://stream-uk1.radioparadise.com/aac-128"
+      ]
+    },
+    {
+      "id": "radio-paradise-rock",
+      "name": "Radio Paradise Rock",
+      "genre": "rock",
+      "description": "Deep rock mix: classic weight, modern edges and long arcs.",
+      "streamUrl": "https://stream.radioparadise.com/rock-128",
+      "fallbackUrls": [
+        "https://stream-uk1.radioparadise.com/rock-128"
+      ]
+    },
+    {
+      "id": "radio-paradise-mellow",
+      "name": "Radio Paradise Mellow",
+      "genre": "mellow",
+      "description": "Slow-burn guitars, electronic shade and softer deep cuts.",
+      "streamUrl": "https://stream.radioparadise.com/mellow-128",
+      "fallbackUrls": [
+        "https://stream-uk1.radioparadise.com/mellow-128"
+      ]
+    },
+    {
+      "id": "radio-paradise-global",
+      "name": "Radio Paradise Global",
+      "genre": "global",
+      "description": "Worldwide grooves, folk fragments and border-crossing records.",
+      "streamUrl": "https://stream.radioparadise.com/global-128",
+      "fallbackUrls": [
+        "https://stream-uk1.radioparadise.com/global-128"
+      ]
+    },
+    {
+      "id": "bassdrive",
+      "name": "Bassdrive",
+      "genre": "dnb",
+      "description": "Long-running Drum and Bass signal for jungle heads and night coders.",
+      "streamUrl": "https://ice.bassdrive.net/stream",
+      "fallbackUrls": [
+        "https://bassdrive.radioca.st/stream"
+      ]
+    },
+    {
+      "id": "full-spectrum-radio",
+      "name": "Full Spectrum Radio",
+      "genre": "dnb",
+      "description": "Drum and bass, jungle and bass pressure from the sharper end.",
+      "streamUrl": "https://fullspectrumradio.com:8000/fslisten"
+    },
+    {
+      "id": "uk-bass-radio",
+      "name": "UK Bass Radio",
+      "genre": "bass",
+      "description": "UK bass, garage, jungle and underground pressure for system tests.",
+      "streamUrl": "https://s2.ssl-stream.com/listen/uk_bass_radio/stream"
+    },
+    {
+      "id": "dnbradio-fw",
+      "name": "DNBRadio FW",
+      "genre": "dnb",
+      "description": "Alternate DNBRadio feed for field testing the low-end path.",
+      "streamUrl": "https://fw.dnbradio.com/dnbradio_main.mp3"
+    },
+    {
+      "id": "atmospheric-dnb-source",
+      "name": "Atmospheric DnB s0urce",
+      "genre": "atmospheric-dnb",
+      "description": "Deep atmospheric drum and bass for long-form focus drift.",
+      "streamUrl": "https://brokenbeats.net/stream/aac"
+    },
+    {
+      "id": "liquid-dnb",
+      "name": "Liquid DnB",
+      "genre": "liquid-dnb",
+      "description": "Liquid drum and bass candidate feed for signal testing.",
+      "streamUrl": "https://antares.dribbcast.com/proxy/dave1/stream/"
+    },
+    {
+      "id": "futuredrumz",
+      "name": "Futuredrumz",
+      "genre": "dnb",
+      "description": "Drum and bass candidate feed from the old internet lane.",
+      "streamUrl": "https://futuredr.radioca.st/;?"
+    },
+    {
+      "id": "jungletrain",
+      "name": "Jungletrain",
+      "genre": "dnb",
+      "description": "Dutch 24/7 jungle and drum and bass since 2002, live DJ shows.",
+      "streamUrl": "https://a7.asurahosting.com:7880/woodsiaalpina"
+    },
+    {
+      "id": "sub-fm",
+      "name": "Sub FM",
+      "genre": "bass",
+      "description": "Dubstep, garage, jungle and bass mutation candidate from the sub layer.",
+      "streamUrl": "https://subfm.radioca.st/Sub.FM"
+    },
+    {
+      "id": "flex-fm",
+      "name": "Flex FM",
+      "genre": "jungle",
+      "description": "London pirate lane for jungle, drum and bass and garage pressure.",
+      "streamUrl": "https://a2.asurahosting.com:7400/radio.mp3"
+    },
+    {
+      "id": "reprezent",
+      "name": "Reprezent",
+      "genre": "grime",
+      "description": "South London youth radio with grime, dnb and UK rap heat.",
+      "streamUrl": "https://radio.canstream.co.uk:8022/live.mp3"
+    },
+    {
+      "id": "aaja-radio",
+      "name": "AAJA Radio",
+      "genre": "grime",
+      "description": "South London community signal: rap, bass and club music from the AAJA crew.",
+      "streamUrl": "https://aaja.radiocult.fm/stream"
+    },
+    {
+      "id": "rinse-france",
+      "name": "Rinse France",
+      "genre": "bass",
+      "description": "French outpost of the Rinse family for grime and bass pressure.",
+      "streamUrl": "https://radio10.pro-fhi.net/radio/9041/stream"
+    },
+    {
+      "id": "24dubstep",
+      "name": "24Dubstep DropZone",
+      "genre": "dubstep",
+      "description": "Dubstep and 140 pressure from the Polish underground.",
+      "streamUrl": "https://stream.24dubstep.pl/radio/8000/mp3_normal"
+    },
+    {
+      "id": "hirschmilch-psytrance",
+      "name": "Hirschmilch Psytrance",
+      "genre": "psytrance",
+      "description": "Full-throttle psytrance from the German underground feed.",
+      "streamUrl": "https://hirschmilch.de:7501/psytrance.mp3"
+    },
+    {
+      "id": "hirschmilch-progressive",
+      "name": "Hirschmilch Progressive",
+      "genre": "progressive",
+      "description": "Rolling progressive trance and deep hypnotic drive.",
+      "streamUrl": "https://hirschmilch.de:7501/progressive.mp3"
+    },
+    {
+      "id": "hirschmilch-prog-house",
+      "name": "Hirschmilch Prog-House",
+      "genre": "prog-house",
+      "description": "Long-form progressive house with a night-drive pulse.",
+      "streamUrl": "https://hirschmilch.de:7501/prog-house.mp3"
+    },
+    {
+      "id": "hirschmilch-electronic",
+      "name": "Hirschmilch Electronic",
+      "genre": "electronic",
+      "description": "Clean electronic cuts from melodic to club-adjacent.",
+      "streamUrl": "https://hirschmilch.de:7501/electronic.mp3"
+    },
+    {
+      "id": "hirschmilch-techno",
+      "name": "Hirschmilch Techno",
+      "genre": "techno",
+      "description": "Straight machine rhythm from the Hirschmilch bunker.",
+      "streamUrl": "https://hirschmilch.de:7501/techno.mp3"
+    },
+    {
+      "id": "hirschmilch-chillout",
+      "name": "Hirschmilch Chillout",
+      "genre": "chillout",
+      "description": "Downtempo psy-flavored decompression after the tunnel.",
+      "streamUrl": "https://hirschmilch.de:7501/chillout.mp3"
+    },
+    {
+      "id": "deep-dub-tech",
+      "name": "Deep Dub Tech Radio",
+      "genre": "dub-techno",
+      "description": "Dub techno and deep techno pressure: cavernous chords and slow pulse.",
+      "streamUrl": "https://listen5.myradio24.com/ddtradio"
+    },
+    {
+      "id": "dmt-fm",
+      "name": "DMT FM",
+      "genre": "psytrance",
+      "description": "UK psytrance 24/7: goa, prog, night and forest plus guest shows.",
+      "streamUrl": "https://dc1.serverse.com/proxy/ywycfrxn/stream"
+    },
+    {
+      "id": "radiozora-chill",
+      "name": "RadiOzora Chill",
+      "genre": "psychill",
+      "description": "Ozora festival chill channel: psychill, psybient and slow psychedelic drift.",
+      "streamUrl": "https://chill.out.airtime.pro/chill_a"
+    },
+    {
+      "id": "psybient-sunset",
+      "name": "Psybient Sunset",
+      "genre": "psybient",
+      "description": "Psybient and psydub: Tripswitch, Eat Static remixes and slow-motion psychedelia.",
+      "streamUrl": "https://listen.openstream.co/6517/audio"
+    },
+    {
+      "id": "paradisehunter-chill",
+      "name": "Paradisehunter Chill",
+      "genre": "psychill",
+      "description": "German chillout feed: psychill, ambient and psy-downtempo deep cuts.",
+      "streamUrl": "https://radio.paradisehunter.de/listen/chillout/radio.mp3"
+    },
+    {
+      "id": "pyramid-radio",
+      "name": "Pyramid Radio",
+      "genre": "psybient",
+      "description": "Psychill and psybient: Detune, slow grooves and deep tripping.",
+      "streamUrl": "https://a5.asurahosting.com:7540/radio.mp3"
+    },
+    {
+      "id": "igfm-main",
+      "name": "Intergalactic FM",
+      "genre": "electro",
+      "description": "Cyberpunk, Italo-disco and raw electro from The Hague.",
+      "streamUrl": "https://radio.intergalactic.fm/1"
+    },
+    {
+      "id": "fip-electro",
+      "name": "FIP Electro",
+      "genre": "electro",
+      "description": "FIP electro: machine funk, electro and club-adjacent electronics, no ads.",
+      "streamUrl": "https://icecast.radiofrance.fr/fipelectro-midfi.mp3"
+    },
+    {
+      "id": "the-lot-radio",
+      "name": "The Lot Radio",
+      "genre": "electronic",
+      "description": "Brooklyn booth energy: live DJs, dance music and street-level sets.",
+      "streamUrl": "https://live-test.thelotradio.com/live/index.m3u8"
+    },
+    {
+      "id": "operator-radio",
+      "name": "Operator Radio",
+      "genre": "electronic",
+      "description": "Rotterdam frequency for DJs, electronic music and local culture.",
+      "streamUrl": "https://origin.streamnerd.nl/operator/operator/icecast.audio"
+    },
+    {
+      "id": "foundation-fm",
+      "name": "Foundation FM",
+      "genre": "electronic",
+      "description": "London selector radio crossing house, techno, dnb and jazz edits.",
+      "streamUrl": "https://streamer.radio.co/s0628bdd53/listen"
+    },
+    {
+      "id": "classic-house-music",
+      "name": "Classic House Music",
+      "genre": "house",
+      "description": "Classic house: 1987 club mixes and Chicago roots.",
+      "streamUrl": "https://classichousemusic.ca/listen/classic_house_music/radio.mp3"
+    },
+    {
+      "id": "chicago-house",
+      "name": "CHICAGO HOUSE",
+      "genre": "chicago-house",
+      "description": "Chicago house history: Tyree Cooper and the Trax lineage.",
+      "streamUrl": "https://stream.radio.co/sae989fe39/listen"
+    },
+    {
+      "id": "313live",
+      "name": "313live",
+      "genre": "house",
+      "description": "Detroit selector stream: tech house and club cuts from the 313.",
+      "streamUrl": "https://a9.asurahosting.com/listen/3_1_3_live.org/radio.mp3"
+    },
+    {
+      "id": "badbeatradio",
+      "name": "BadBeatRadio",
+      "genre": "breaks",
+      "description": "Nu skool breakbeat: broken beats, bass and party pressure.",
+      "streamUrl": "https://misato.ru-hoster.com:8061/badbeatradio"
+    },
+    {
+      "id": "dublab",
+      "name": "dublab",
+      "genre": "eclectic",
+      "description": "Los Angeles transmission for future roots, odd pop and deep selectors.",
+      "streamUrl": "https://dublab.out.airtime.pro/dublab_a"
+    },
+    {
+      "id": "noods-radio",
+      "name": "Noods Radio",
+      "genre": "leftfield",
+      "description": "Bristol independent radio with grime, ambient, punk and club detours.",
+      "streamUrl": "https://noods-radio.radiocult.fm/stream"
+    },
+    {
+      "id": "kiosk-radio",
+      "name": "Kiosk Radio",
+      "genre": "eclectic",
+      "description": "Brussels booth culture: local selectors, oddball dance and global dust.",
+      "streamUrl": "https://kioskradiobxl.out.airtime.pro/kioskradiobxl_b"
+    },
+    {
+      "id": "netil-radio",
+      "name": "Netil Radio",
+      "genre": "community",
+      "description": "East London community radio with leftfield music and art-space energy.",
+      "streamUrl": "https://netilradio.out.airtime.pro/netilradio_a"
+    },
+    {
+      "id": "doyouworld",
+      "name": "Do!!You!!!World",
+      "genre": "beats",
+      "description": "London oddball radio for beats, dubwise edits and outsider selection.",
+      "streamUrl": "https://doyouworld.out.airtime.pro/doyouworld_a"
+    },
+    {
+      "id": "refuge-worldwide",
+      "name": "Refuge Worldwide",
+      "genre": "community",
+      "description": "Berlin community radio candidate kept for on-device signal checks.",
+      "streamUrl": "https://streaming.radio.co/s3699c5e49/listen"
+    },
+    {
+      "id": "lyl-radio",
+      "name": "LYL Radio",
+      "genre": "eclectic",
+      "description": "French independent radio candidate for obscure global soundscapes.",
+      "streamUrl": "https://icecast.lyl.live/live"
+    },
+    {
+      "id": "fip-radio",
+      "name": "FIP Radio",
+      "genre": "eclectic",
+      "description": "Ad-free Paris selector flow candidate with broad human curation.",
+      "streamUrl": "https://icecast.radiofrance.fr/fip-midfi.mp3",
+      "fallbackUrls": [
+        "https://icecast.radiofrance.fr/fip-hifi.aac"
+      ]
+    },
+    {
+      "id": "worldwide-fm",
+      "name": "Worldwide FM",
+      "genre": "eclectic",
+      "description": "Gilles Peterson's global selector flow with a broad human touch.",
+      "streamUrl": "https://worldwide-fm.radiocult.fm/stream"
+    },
+    {
+      "id": "radio-alhara",
+      "name": "Radio Alhara",
+      "genre": "community",
+      "description": "Ramallah community radio: field recordings, odd pop and leftfield sound.",
+      "streamUrl": "https://stream.radioalhara.net/ra"
+    },
+    {
+      "id": "tsf-jazz",
+      "name": "TSF Jazz",
+      "genre": "jazz",
+      "description": "Paris jazz signal: standards, bebop, soulful swings and late-night horns.",
+      "streamUrl": "https://tsfjazz.ice.infomaniak.ch/tsfjazz-high.mp3"
+    },
+    {
+      "id": "kuvo",
+      "name": "KUVO Jazz",
+      "genre": "jazz",
+      "description": "Denver's jazz voice with live sets, Latin jazz and deep catalog cuts.",
+      "streamUrl": "https://kuvo-ice.streamguys1.com/kuvo-mp3-128"
+    },
+    {
+      "id": "jazz-radio",
+      "name": "Jazz Radio",
+      "genre": "jazz",
+      "description": "French jazz network mixing swing, bossa and acid jazz flavors.",
+      "streamUrl": "https://jazzradio.ice.infomaniak.ch/jazzradio-high.mp3"
+    },
+    {
+      "id": "funky-radio",
+      "name": "FUNKY RADIO",
+      "genre": "funk",
+      "description": "60s-70s funk and soul, classic crate-digging lane from the Italian studio.",
+      "streamUrl": "https://my.streamingmedia.it/listen/discofunk/play"
+    },
+    {
+      "id": "fm80-funky",
+      "name": "FM 80 Funky Music",
+      "genre": "funk",
+      "description": "Disco and funk, classic and modern, straight from the FM 80 crate.",
+      "streamUrl": "https://listen.radioking.com/radio/467555/stream/523739"
+    },
+    {
+      "id": "fip-jazz",
+      "name": "FIP Jazz",
+      "genre": "jazz",
+      "description": "Paris deep jazz: bop, spiritual, modern edges and no ads.",
+      "streamUrl": "https://icecast.radiofrance.fr/fipjazz-midfi.mp3",
+      "fallbackUrls": [
+        "https://icecast.radiofrance.fr/fipjazz-hifi.aac"
+      ]
+    },
+    {
+      "id": "wwoz",
+      "name": "WWOZ New Orleans",
+      "genre": "jazz-funk",
+      "description": "New Orleans community signal: brass, funk, roots and live sessions.",
+      "streamUrl": "https://wwoz-sc.streamguys1.com/wwoz-hi.mp3"
+    },
+    {
+      "id": "jfsr",
+      "name": "JFSR Jazz Funk Soul",
+      "genre": "soul",
+      "description": "UK jazz-funk and soul crate: rare grooves and mellow pressure.",
+      "streamUrl": "https://s2.radio.co/s22ae5a8a6/listen"
+    },
+    {
+      "id": "starpoint",
+      "name": "Starpoint Radio",
+      "genre": "soul",
+      "description": "London soul, disco and boogie from the pirate-era crate.",
+      "streamUrl": "https://stream2.hippynet.co.uk/stream/starpointradiohigh"
+    },
+    {
+      "id": "suite-jazz",
+      "name": "Suite Jazz Radio",
+      "genre": "smooth-jazz",
+      "description": "Smooth and straight-ahead jazz: Art Farmer warmth, late-night horns.",
+      "streamUrl": "https://jenny.torontocast.com:2000/stream/suitejazzradio"
+    },
+    {
+      "id": "mc-bossa",
+      "name": "Radio Monte Carlo Bossa",
+      "genre": "bossa",
+      "description": "Bossa nova and Brazilian lounge from the Monte Carlo family.",
+      "streamUrl": "https://mc-mcbossa.hostingradio.ru/mcbossa96.aacp"
+    },
+    {
+      "id": "cumbia-total",
+      "name": "Cumbia Total",
+      "genre": "cumbia",
+      "description": "Colombian cumbia: accordion hooks, gaita and dancefloor swing.",
+      "streamUrl": "https://playerservices.streamtheworld.com/api/livestream-redirect/ACIR40_S01AAC.aac"
+    },
+    {
+      "id": "afrobeats-jazz",
+      "name": "Afrobeats Jazz Radio",
+      "genre": "afrobeats",
+      "description": "Afrobeats and amapiano with sax and jazz edges, Lagos to London.",
+      "streamUrl": "https://radio.nitro-server.uk/listen/frobeatsazzadio/radio.mp3",
+      "fallbackUrls": [
+        "https://radio.nitro-server.uk/listen/frobeatsisingadio/radio.mp3"
+      ]
+    },
+    {
+      "id": "soweto-underground",
+      "name": "Soweto Underground",
+      "genre": "amapiano",
+      "description": "Amapiano from Soweto: log drums and deep house bones.",
+      "streamUrl": "https://radio.d3kani.com/listen/soweto_underground/radio.mp3"
+    },
+    {
+      "id": "fip-groove",
+      "name": "FIP Groove",
+      "genre": "funk",
+      "description": "FIP groove: funk, soul, Afro and trip-hop in the Paris selector flow.",
+      "streamUrl": "https://icecast.radiofrance.fr/fipgroove-midfi.mp3"
+    },
+    {
+      "id": "radio-meuh",
+      "name": "Radio Meuh",
+      "genre": "funk",
+      "description": "French independent radio: funk, soul, afro and downtempo, no ads.",
+      "streamUrl": "https://radiomeuh.ice.infomaniak.ch/radiomeuh-128.mp3"
+    },
+    {
+      "id": "kfrp",
+      "name": "KFRP Radio",
+      "genre": "underground-rap",
+      "description": "Underground hip-hop, horrorcore and dark instrumentals from Lincoln.",
+      "streamUrl": "https://radio.kfrp.live/listen/kfrp_radio/radio.mp3"
+    },
+    {
+      "id": "radio-acid",
+      "name": "Radio ACID",
+      "genre": "hip-hop",
+      "description": "Chill hip-hop and laid-back rap cuts with smooth edges.",
+      "streamUrl": "https://stream.radioacid.com/stream"
+    },
+    {
+      "id": "record-lo-fi",
+      "name": "Record Lo-Fi",
+      "genre": "chillhop",
+      "description": "Lo-fi hip-hop and jazzhop beats from the Russian radio machine.",
+      "streamUrl": "https://radiorecord.hostingradio.ru/lofi96.aacp"
+    },
+    {
+      "id": "nightwave-plaza",
+      "name": "Nightwave Plaza",
+      "genre": "vaporwave",
+      "description": "Vaporwave, future funk and cassette-lit aesthetic beats.",
+      "streamUrl": "https://radio.plaza.one/mp3"
+    },
+    {
+      "id": "litt-lofi",
+      "name": "LITT Live Lofi",
+      "genre": "lo-fi",
+      "description": "Lo-fi hip-hop, chill beats and dusty instrumental loops for late terminals.",
+      "streamUrl": "https://das-sa39.cdnstream1.com/5582_128"
+    },
+    {
+      "id": "moon-phase-chill",
+      "name": "Moon Phase Chill",
+      "genre": "lo-fi",
+      "description": "Warm lo-fi, chillhop and mellow beat loops from the quiet side.",
+      "streamUrl": "https://dc1.serverse.com/proxy/dnutqhxl/stream"
+    },
+    {
+      "id": "fip-hip-hop",
+      "name": "FIP Hip-Hop",
+      "genre": "hip-hop",
+      "description": "French public radio hip-hop: golden era classics and new scenes, no ads.",
+      "streamUrl": "https://icecast.radiofrance.fr/fiphiphop-midfi.mp3"
+    },
+    {
+      "id": "pueblo-vista",
+      "name": "Pueblo Vista Radio",
+      "genre": "chillhop",
+      "description": "Lofi label radio: dusty loops, jazzy chords and bedroom warmth.",
+      "streamUrl": "https://pueblovista.net/listen/pueblo_vista_fm/standard.mp3"
+    },
+    {
+      "id": "epic-lounge-jazzhop",
+      "name": "Epic Lounge Jazzhop",
+      "genre": "jazz-hop",
+      "description": "Jazz-hop lounge: mellow keys and a boom-bap pulse for late terminals.",
+      "streamUrl": "https://stream.epic-lounge.com/jazzhop-lounge"
+    },
+    {
+      "id": "sensihiphop",
+      "name": "Sensi Hip Hop",
+      "genre": "hip-hop",
+      "description": "UK boom-bap and backpack rap: KRS-One, El Da Sensei and dusty 90s weight.",
+      "streamUrl": "https://sensihiphop.radioca.st/stream"
+    },
+    {
+      "id": "wefunk",
+      "name": "WEFUNK Radio",
+      "genre": "hip-hop",
+      "description": "Montreal crate-digging institution: funk 45s and golden-era rap inside DJ sets.",
+      "streamUrl": "https://s-14.wefunkradio.com:8443/wefunk64.mp3"
+    },
+    {
+      "id": "scratchvision",
+      "name": "ScratchVision Radio",
+      "genre": "turntablism",
+      "description": "Turntablism and DJ culture: Gang Starr, cuts and scratch breaks.",
+      "streamUrl": "https://stream.radio.co/saacde1bcb/low"
+    },
+    {
+      "id": "radio-swiss-classic",
+      "name": "Radio Swiss Classic",
+      "genre": "classical",
+      "description": "SRG classical: standards, opera and chamber, no ads.",
+      "streamUrl": "https://stream.srg-ssr.ch/srgssr/rsc_de/aac/192"
+    },
+    {
+      "id": "radio-classique",
+      "name": "Radio Classique",
+      "genre": "classical",
+      "description": "Paris classical: concert hall standards with light commentary.",
+      "streamUrl": "https://radioclassique.ice.infomaniak.ch/radioclassique-high.mp3"
+    },
+    {
+      "id": "wqxr-q2",
+      "name": "WQXR Q2",
+      "genre": "contemporary-classical",
+      "description": "New York avant-garde and contemporary classical from NYPR.",
+      "streamUrl": "https://q2stream.wqxr.org/q2.aac"
+    },
+    {
+      "id": "radio-art-contemporary",
+      "name": "Radio Art Contemporary",
+      "genre": "contemporary-classical",
+      "description": "Contemporary classical: Tavener, Pärt and spiritual minimalism.",
+      "streamUrl": "https://live.radioart.com/fContemporary.mp3"
+    },
+    {
+      "id": "radio-art-ambient-piano",
+      "name": "Radio Art Ambient Piano",
+      "genre": "neoclassical",
+      "description": "Ambient piano and modern composition: Vantzou, slow keys, no beat.",
+      "streamUrl": "https://live.radioart.com/fAmbient_piano.mp3"
+    },
+    {
+      "id": "radio-art-einaudi",
+      "name": "Radio Art Einaudi",
+      "genre": "neoclassical",
+      "description": "Einaudi channel: piano cycles, strings and filmic calm, 24/7.",
+      "streamUrl": "https://live.radioart.com/fLudovico_einaudi.mp3"
+    },
+    {
+      "id": "whisperings",
+      "name": "Whisperings Solo Piano",
+      "genre": "neoclassical",
+      "description": "Solo piano channel: neoclassical originals and Bach arrangements.",
+      "streamUrl": "https://pianosolo.streamguys1.com/live"
+    },
+    {
+      "id": "radio-orpheus",
+      "name": "Radio Orpheus",
+      "genre": "classical",
+      "description": "Moscow classical voice: opera, symphonic and chamber music.",
+      "streamUrl": "https://orfeyfm.hostingradio.ru:8034/orfeyfm128.mp3"
+    },
+    {
+      "id": "resonance-fm",
+      "name": "Resonance FM",
+      "genre": "experimental",
+      "description": "London community radio for experimental sound and art.",
+      "streamUrl": "https://stream.resonance.fm/resonance"
+    },
+    {
+      "id": "kexp",
+      "name": "KEXP",
+      "genre": "indie-rock",
+      "description": "Seattle institution for indie, rock, hip-hop, live rooms and deep finds.",
+      "streamUrl": "https://kexp.streamguys1.com/kexp160.aac"
+    },
+    {
+      "id": "wxyc",
+      "name": "WXYC Chapel Hill",
+      "genre": "college",
+      "description": "UNC freeform radio: noise, jazz, punk, global and basement discoveries.",
+      "streamUrl": "https://audio-mp3.ibiblio.org/wxyc.mp3"
+    },
+    {
+      "id": "wmbr",
+      "name": "WMBR MIT",
+      "genre": "college",
+      "description": "MIT freeform radio: punk, weird records, noise, rap and deep shelves.",
+      "streamUrl": "https://wmbr.org:8002/hi"
+    },
+    {
+      "id": "kxlu",
+      "name": "KXLU",
+      "genre": "indie-punk",
+      "description": "Los Angeles college radio with punk, indie, noise and left turns.",
+      "streamUrl": "https://kxlu.streamguys1.com/kxlu-hi"
+    },
+    {
+      "id": "cashmere-radio",
+      "name": "Cashmere Radio",
+      "genre": "experimental",
+      "description": "Berlin freeform radio for experimental sound, radio art and noise.",
+      "streamUrl": "https://cashmereradio.out.airtime.pro/cashmereradio_a"
+    },
+    {
+      "id": "kchung",
+      "name": "KCHUNG",
+      "genre": "freeform",
+      "description": "Los Angeles freeform collective radio with punk and odd transmissions.",
+      "streamUrl": "https://kchung-radio-01e54a81.radiocult.fm/stream"
+    },
+    {
+      "id": "roots-legacy",
+      "name": "Roots Legacy",
+      "genre": "roots-reggae",
+      "description": "French roots, dub and reggae candidate with a stubborn signal.",
+      "streamUrl": "https://l.rootslegacy.fr/;",
+      "fallbackUrls": [
+        "https://l.rootslegacy.fr/stream/1/"
+      ]
+    },
+    {
+      "id": "only-dub",
+      "name": "Only Dub Radio",
+      "genre": "roots-reggae",
+      "description": "Dub-only pressure: heavy riddims, versions and bass weight without detours.",
+      "streamUrl": "https://puma.streemlion.com:5505/stream"
+    },
+    {
+      "id": "fip-reggae",
+      "name": "FIP Reggae",
+      "genre": "roots-reggae",
+      "description": "FIP reggae: roots, dub and Jamaican classics from Radio France.",
+      "streamUrl": "https://icecast.radiofrance.fr/fipreggae-midfi.mp3"
+    },
+    {
+      "id": "generations-reggae",
+      "name": "Generations Reggae",
+      "genre": "roots-reggae",
+      "description": "Reggae and dancehall channel from the French Generations family.",
+      "streamUrl": "https://generations-caraibes.ice.infomaniak.ch/generations-caraibes-high.mp3"
+    },
+    {
+      "id": "reggae-181",
+      "name": "Reggae.fr",
+      "genre": "roots-reggae",
+      "description": "French reggae webradio: roots, dub and big-tune mixes.",
+      "streamUrl": "https://listen.radioking.com/radio/50473/stream/87415"
+    },
+    {
+      "id": "sensi-dancehall",
+      "name": "Sensimedia Dancehall",
+      "genre": "dancehall",
+      "description": "Dancehall from the Sensi family: Tanya Stephens and riddim pressure.",
+      "streamUrl": "https://sensidancehall.radioca.st/;"
+    },
+    {
+      "id": "generations-dancehall",
+      "name": "Générations Dancehall",
+      "genre": "dancehall",
+      "description": "French dancehall channel: Cutty Ranks classics and new cuts.",
+      "streamUrl": "https://generations-dancehall.ice.infomaniak.ch/generations-dancehall.aac"
+    },
+    {
+      "id": "tonic-ska",
+      "name": "Tonic Ska Radio",
+      "genre": "ska",
+      "description": "Ska and 2 Tone: Madness, Trojan-era horns, rude boy energy.",
+      "streamUrl": "https://eu10.fastcast4u.com/tonicska"
+    },
+    {
+      "id": "bigr-80s-metal",
+      "name": "Big R 80s Metal",
+      "genre": "metal",
+      "description": "Hair, speed and classic heavy metal from the cassette-era vault.",
+      "streamUrl": "https://bigrradio.cdnstream1.com/5186_128"
+    },
+    {
+      "id": "metal-only",
+      "name": "Metal Only",
+      "genre": "metal",
+      "description": "Heavy metal channel with less gloss and more amplifier heat.",
+      "streamUrl": "https://metalonly.sp.radio.fm/stream"
+    },
+    {
+      "id": "virage-metal",
+      "name": "Virage Metal",
+      "genre": "metal",
+      "description": "Modern hard rock and metal with a stable clean signal.",
+      "streamUrl": "https://virage-radio-metal.ice.infomaniak.ch/virage-radio-metal.mp3"
+    },
+    {
+      "id": "punk-rock-demo",
+      "name": "Punk Rock Demonstration",
+      "genre": "punk",
+      "description": "Independent punk rock broadcast with raw basement energy.",
+      "streamUrl": "https://radio.punkrockdemo.com/"
+    },
+    {
+      "id": "punkrockers-radio",
+      "name": "Punkrockers Radio",
+      "genre": "punk",
+      "description": "Punk rock candidate feed kept for real-device debugging.",
+      "streamUrl": "https://stream.punkrockers-radio.de:8443/mp3"
+    },
+    {
+      "id": "dkfm",
+      "name": "DKFM",
+      "genre": "post-punk",
+      "description": "Shoegaze, dream pop, post-punk and guitar fog for the late feed.",
+      "streamUrl": "https://kathy.torontocast.com:2005/stream"
+    },
+    {
+      "id": "metal-devastation",
+      "name": "Metal Devastation",
+      "genre": "metal",
+      "description": "Heavy metal without the gloss, aimed straight at the distortion pedals.",
+      "streamUrl": "https://c13.radioboss.fm:18099/stream"
+    },
+    {
+      "id": "gritty-rock",
+      "name": "Gritty Rock Radio",
+      "genre": "blues-rock",
+      "description": "Blues rock and gritty guitar: Bonamassa, heavy blues, no gloss.",
+      "streamUrl": "https://listen.radioking.com/radio/10713/stream/224413"
+    },
+    {
+      "id": "bandung-dm",
+      "name": "Bandung Death Metal Syndicate",
+      "genre": "black-metal",
+      "description": "Extreme metal from Bandung: death and black metal underground.",
+      "streamUrl": "https://stream.zeno.fm/t9wdzppre5zuv"
+    },
+    {
+      "id": "planet-rock",
+      "name": "Planet Rock",
+      "genre": "classic-rock",
+      "description": "UK classic rock institution: Zeppelin, Floyd and long guitar solos.",
+      "streamUrl": "https://stream.rcs.revma.com/w66qp4pp81uvv"
+    },
+    {
+      "id": "fip-metal",
+      "name": "FIP Metal",
+      "genre": "metal",
+      "description": "FIP metal branch: doom, sludge, post-metal and heavy avant-garde, no ads.",
+      "streamUrl": "https://icecast.radiofrance.fr/fipmetal-midfi.mp3"
+    },
+    {
+      "id": "led-zeppelin",
+      "name": "Exclusively Led Zeppelin",
+      "genre": "classic-rock",
+      "description": "Led Zeppelin only: album cuts, deep tracks and live takes, 24/7.",
+      "streamUrl": "https://streaming.exclusive.radio/er-app/ledzeppelin/icecast.audio"
+    },
+    {
+      "id": "ru-anon-fm",
+      "name": "Radio Anonymous",
+      "genre": "russian",
+      "description": "Independent Russian signal: fresh indie, underground and odd waves.",
+      "streamUrl": "https://icecast.anon.fm/radio"
+    },
+    {
+      "id": "ru-europa-plus",
+      "name": "Europa Plus",
+      "genre": "russian",
+      "description": "Russian pop hits lane from the classic Euro network.",
+      "streamUrl": "https://ep256.hostingradio.ru:8052/europaplus256.mp3"
+    },
+    {
+      "id": "ru-retro-fm",
+      "name": "Retro FM",
+      "genre": "russian",
+      "description": "Soviet and western retro pop from the famous Russian frequency.",
+      "streamUrl": "https://retroserver.streamr.ru:8043/retro256.mp3"
+    },
+    {
+      "id": "ru-rock-fm",
+      "name": "ROCK FM",
+      "genre": "russian",
+      "description": "Classic rock canon: western heavies plus Russian rock.",
+      "streamUrl": "https://nashe1.hostingradio.ru/rock-128.mp3"
+    },
+    {
+      "id": "ru-vanya",
+      "name": "Radio Vanya",
+      "genre": "russian",
+      "description": "Cheerful Russian pop and humor for the road.",
+      "streamUrl": "https://icecast-radiovanya.cdnvideo.ru/radiovanya"
+    },
+    {
+      "id": "ru-chanson",
+      "name": "Chanson",
+      "genre": "russian",
+      "description": "Russian chanson: highway ballads, shanson and street poetry.",
+      "streamUrl": "https://chanson.hostingradio.ru:8041/chanson128.mp3"
+    },
+    {
+      "id": "ru-dfm-90s",
+      "name": "DFM 90s",
+      "genre": "russian",
+      "description": "Russian dance 90s: disco, techno-pop and retro club cuts.",
+      "streamUrl": "https://dfm-disc90.hostingradio.ru/disc9096.aacp"
+    },
+    {
+      "id": "ru-dorognoe",
+      "name": "Dorognoe Radio",
+      "genre": "russian",
+      "description": "Russian pop and road music for long drives.",
+      "streamUrl": "https://dorognoe.hostingradio.ru:8000/dorognoe"
+    },
+    {
+      "id": "ru-nashe",
+      "name": "Nashe Radio",
+      "genre": "russian",
+      "description": "Russian rock classic: the voice of the Nashe generation.",
+      "streamUrl": "https://nashe1.hostingradio.ru/nashe-128.mp3"
+    },
+    {
+      "id": "ru-silver-rain",
+      "name": "Silver Rain",
+      "genre": "russian",
+      "description": "Moscow talk and music: interviews, culture and smart pop.",
+      "streamUrl": "https://silverrain.hostingradio.ru/silver128.mp3"
+    },
+    {
+      "id": "ru-record",
+      "name": "Radio Record",
+      "genre": "russian",
+      "description": "The big Russian dance machine: club and electronic main channel.",
+      "streamUrl": "https://radiorecord.hostingradio.ru/rr_main96.aacp"
+    },
+    {
+      "id": "ru-chocolate",
+      "name": "Radio Chocolate",
+      "genre": "russian",
+      "description": "Sweet Russian pop and smooth hits for the evening terminal.",
+      "streamUrl": "https://choco.hostingradio.ru:10010/fm"
+    },
+    {
+      "id": "ru-jazz",
+      "name": "Radio Jazz",
+      "genre": "russian",
+      "description": "Russian jazz voice: standards, bebop and instrumental classics.",
+      "streamUrl": "https://jfm1.hostingradio.ru:14536/ijstream.mp3"
+    },
+    {
+      "id": "ru-avtoradio",
+      "name": "Avtoradio",
+      "genre": "russian",
+      "description": "Moscow road classic: pop, rock and news for drivers.",
+      "streamUrl": "https://hls-01-gpm.hostingradio.ru/avtoradio495/64/playlist.m3u8"
+    }
+  ],
+  "hash": "5b86a574af2c"
+}
