@@ -44,6 +44,8 @@ These were added for debugging and removed after user testing.
 | NTS Radio 2 | `https://stream-relay-geo.ntslive.net/stream2?client=direct` | removed by user field list |
 | Sleepbot Broadcast | `https://sleepbot.streamguys1.com/botb.mp3` | removed by user field list |
 | Skyrock Klassiks | `https://icecast.skyrock.net/s/klassiks_aac_64k` | French rap oldies; does not fit the collection, removed on request (2026-11-27) |
+| Bassdrive Radioca.st | `https://bassdrive.radioca.st/stream` | merged into Bassdrive `fallbackUrls` instead of a separate slot (2026-11-27) |
+| Roots Legacy Alt | `https://l.rootslegacy.fr/stream/1/` | merged into Roots Legacy `fallbackUrls` (2026-11-27) |
 
 ## Russian / RU-Origin Candidates
 
