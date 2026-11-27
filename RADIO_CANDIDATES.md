@@ -272,6 +272,27 @@ Pyramid Radio played Detune.
 
 All five stay inside `psy / techno / club` — no new sections.
 
+### FIP family, Radio Meuh, Jungletrain added 2026-11-27
+
+| Station | Section | URL |
+| --- | --- | --- |
+| FIP Metal | rock / metal / punk | `https://icecast.radiofrance.fr/fipmetal-midfi.mp3` |
+| FIP Groove | jazz / funk / soul / roots | `https://icecast.radiofrance.fr/fipgroove-midfi.mp3` |
+| FIP Electro | psy / techno / club | `https://icecast.radiofrance.fr/fipelectro-midfi.mp3` |
+| FIP Reggae | reggae / dub / roots | `https://icecast.radiofrance.fr/fipreggae-midfi.mp3` |
+| Radio Meuh | jazz / funk / soul / roots | `https://radiomeuh.ice.infomaniak.ch/radiomeuh-128.mp3` |
+| Jungletrain | dnb / jungle / bass | `https://a7.asurahosting.com:7880/woodsiaalpina` |
+
+NTS 1/2 were re-tried on request. Both answer 200 and echo the Origin in
+`Access-Control-Allow-Origin`, but `<audio crossorigin="anonymous">` in the
+browser fails with `MEDIA_ERR_SRC_NOT_SUPPORTED` (checked plain, `?client=direct`,
+`?client=web` and the mixtape relay). Removed again — the original field-list
+removal was correct.
+
+TESTFM has no 24/7 stream: `testfm.media`, `testfm.ru` and friends have no
+DNS records; the station broadcasts through YouTube, Mixcloud, SoundCloud and
+VK Video, so it cannot be embedded as a radio stream.
+
 ### Stream health automation
 
 `scripts/check-streams.js` (`npm run check:streams`) probes every URL in
