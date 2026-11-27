@@ -46,6 +46,7 @@ These were added for debugging and removed after user testing.
 | Skyrock Klassiks | `https://icecast.skyrock.net/s/klassiks_aac_64k` | French rap oldies; does not fit the collection, removed on request (2026-11-27) |
 | Bassdrive Radioca.st | `https://bassdrive.radioca.st/stream` | merged into Bassdrive `fallbackUrls` instead of a separate slot (2026-11-27) |
 | Roots Legacy Alt | `https://l.rootslegacy.fr/stream/1/` | merged into Roots Legacy `fallbackUrls` (2026-11-27) |
+| Ahenfie FM | `https://radio.localstreamgh.com/listen/ahenfie_radio_/radio.mp3` | stream was mostly Twi announcements, not music; removed on request (2026-11-27) |
 
 ## Russian / RU-Origin Candidates
 
@@ -160,7 +161,6 @@ highlife, afrobeat-jazz and amapiano to `jazz / funk / soul / roots` (renamed).
 | Suite Jazz Radio | smooth-jazz | `https://jenny.torontocast.com:2000/stream/suitejazzradio` | Art Farmer-class warmth |
 | Radio Monte Carlo Bossa | bossa | `https://mc-mcbossa.hostingradio.ru/mcbossa96.aacp` | Brazilian lounge |
 | Cumbia Total | cumbia | `https://playerservices.streamtheworld.com/api/livestream-redirect/ACIR40_S01AAC.aac` | Colombian cumbia |
-| Ahenfie FM | highlife | `https://radio.localstreamgh.com/listen/ahenfie_radio_/radio.mp3` | Accra, Twi-language |
 | Afrobeats Jazz Radio | afrobeat-jazz | `https://radio.nitro-server.uk/listen/frobeatsazzadio/radio.mp3` | fallback mount `frobeatsisingadio` |
 | Soweto Underground | amapiano | `https://radio.d3kani.com/listen/soweto_underground/radio.mp3` | log drums, Soweto |
 | Classic House Music | house | `https://classichousemusic.ca/listen/classic_house_music/radio.mp3` | 1987 club mixes |
